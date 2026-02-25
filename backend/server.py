@@ -125,6 +125,101 @@ async def get_quiz_results():
     return results
 
 
+# Instagram Feed API
+class InstagramPost(BaseModel):
+    image_url: str
+    thumbnail_url: Optional[str] = ""
+    permalink: str
+    caption: Optional[str] = ""
+    media_type: str = "IMAGE"
+
+class InstagramFeed(BaseModel):
+    posts: List[InstagramPost]
+    username: str
+    last_updated: str
+
+
+@api_router.get("/instagram/feed")
+async def get_instagram_feed():
+    """
+    Fetch Instagram feed for PRIBEGA account.
+    Uses scraping approach with fallback to cached/static data.
+    """
+    try:
+        # Try to get cached data first
+        cached = await db.instagram_cache.find_one({"username": INSTAGRAM_USERNAME}, {"_id": 0})
+        
+        # Check if cache is fresh (less than 1 hour old)
+        if cached:
+            cache_time = datetime.fromisoformat(cached.get("last_updated", "2000-01-01"))
+            if (datetime.now(timezone.utc) - cache_time.replace(tzinfo=timezone.utc)).total_seconds() < 3600:
+                return cached
+        
+        # Try to fetch fresh data
+        async with httpx.AsyncClient() as http_client:
+            # Use Instagram's public API endpoint for profile data
+            response = await http_client.get(
+                f"https://www.instagram.com/api/v1/users/web_profile_info/?username={INSTAGRAM_USERNAME}",
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "X-IG-App-ID": "936619743392459",
+                },
+                timeout=10.0
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                user_data = data.get("data", {}).get("user", {})
+                edges = user_data.get("edge_owner_to_timeline_media", {}).get("edges", [])
+                
+                posts = []
+                for edge in edges[:12]:
+                    node = edge.get("node", {})
+                    posts.append({
+                        "image_url": node.get("display_url", ""),
+                        "thumbnail_url": node.get("thumbnail_src", ""),
+                        "permalink": f"https://www.instagram.com/p/{node.get('shortcode', '')}/",
+                        "caption": (node.get("edge_media_to_caption", {}).get("edges", [{}])[0].get("node", {}).get("text", ""))[:100] if node.get("edge_media_to_caption", {}).get("edges") else "",
+                        "media_type": node.get("__typename", "GraphImage").replace("Graph", "").upper()
+                    })
+                
+                if posts:
+                    feed_data = {
+                        "posts": posts,
+                        "username": INSTAGRAM_USERNAME,
+                        "last_updated": datetime.now(timezone.utc).isoformat()
+                    }
+                    
+                    # Update cache
+                    await db.instagram_cache.update_one(
+                        {"username": INSTAGRAM_USERNAME},
+                        {"$set": feed_data},
+                        upsert=True
+                    )
+                    
+                    return feed_data
+        
+        # Return cached data if fresh fetch failed
+        if cached:
+            return cached
+            
+    except Exception as e:
+        logger.error(f"Instagram fetch error: {e}")
+        
+        # Return cached data on error
+        cached = await db.instagram_cache.find_one({"username": INSTAGRAM_USERNAME}, {"_id": 0})
+        if cached:
+            return cached
+    
+    # Final fallback - return empty
+    return {
+        "posts": [],
+        "username": INSTAGRAM_USERNAME,
+        "last_updated": datetime.now(timezone.utc).isoformat(),
+        "error": "Could not fetch Instagram feed"
+    }
+
+
 app.include_router(api_router)
 
 app.add_middleware(
