@@ -36,43 +36,6 @@ export default function Navigation() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  const playChime = () => {
-    if (soundPlayed || !soundEnabled) return;
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = 830;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.06, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 1.8);
-
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.frequency.value = 1245;
-      osc2.type = 'sine';
-      gain2.gain.setValueAtTime(0.03, ctx.currentTime + 0.3);
-      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
-      osc2.start(ctx.currentTime + 0.3);
-      osc2.stop(ctx.currentTime + 2);
-      setSoundPlayed(true);
-    } catch (e) { /* silent fail */ }
-  };
-
-  useEffect(() => {
-    if (soundEnabled && !soundPlayed) {
-      const handler = () => { playChime(); window.removeEventListener('click', handler); };
-      window.addEventListener('click', handler);
-      return () => window.removeEventListener('click', handler);
-    }
-  });
-
   const navBg = isHome && !scrolled
     ? 'bg-transparent'
     : 'bg-pribega-bg/90 backdrop-blur-md';
