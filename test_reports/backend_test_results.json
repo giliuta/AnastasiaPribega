@@ -4,7 +4,7 @@
     "passed": 6,
     "failed": 0,
     "success_rate": 100.0,
-    "timestamp": "2026-02-25T19:14:57.628421"
+    "timestamp": "2026-02-25T20:04:43.617988"
   },
   "results": [
     {
@@ -14,28 +14,28 @@
         "message": "PRIBEGA API"
       },
       "error": null,
-      "timestamp": "2026-02-25T19:14:56.552015"
+      "timestamp": "2026-02-25T20:04:42.533065"
     },
     {
       "test": "Contact Submission",
       "passed": true,
       "response": {
-        "id": "5fbfc84c-9aef-4df5-8609-2b12911232f2",
+        "id": "1c675085-050e-45cb-9faa-e6c8e6972613",
         "name": "Test User",
         "email": "test@example.com",
         "phone": "+357 12345678",
         "message": "Test message from automated testing",
         "language": "en",
-        "created_at": "2026-02-25T19:14:56.771464+00:00"
+        "created_at": "2026-02-25T20:04:42.743692+00:00"
       },
       "error": null,
-      "timestamp": "2026-02-25T19:14:56.819496"
+      "timestamp": "2026-02-25T20:04:42.781530"
     },
     {
       "test": "Quiz - Natural Look Quiz",
       "passed": true,
       "response": {
-        "id": "bc7dfaf7-9b25-4e15-870c-caaaf8421425",
+        "id": "fd0eb8af-e85d-47b1-ac30-c6ee1e79e172",
         "face_shape": "oval",
         "brow_density": "medium",
         "desired_effect": "natural",
@@ -43,16 +43,16 @@
         "recommendation": "\u041c\u044b \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u0435\u043c \u043d\u0430\u0442\u0443\u0440\u0430\u043b\u044c\u043d\u0443\u044e \u043a\u043e\u0440\u0440\u0435\u043a\u0446\u0438\u044e \u0441 \u043f\u043e\u0434\u0447\u0451\u0440\u043a\u0438\u0432\u0430\u043d\u0438\u0435\u043c \u0432\u0430\u0448\u0435\u0439 \u043f\u0440\u0438\u0440\u043e\u0434\u043d\u043e\u0439 \u0444\u043e\u0440\u043c\u044b. \u041f\u0440\u043e\u0446\u0435\u0434\u0443\u0440\u0430 \u043b\u0430\u043c\u0438\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f \u0438\u0434\u0435\u0430\u043b\u044c\u043d\u043e \u043f\u043e\u0434\u043e\u0439\u0434\u0451\u0442 \u0434\u043b\u044f \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f \u0443\u0445\u043e\u0436\u0435\u043d\u043d\u043e\u0433\u043e, \u043d\u043e \u0435\u0441\u0442\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u043e\u0433\u043e \u043e\u0431\u0440\u0430\u0437\u0430.",
         "name": "",
         "email": "",
-        "created_at": "2026-02-25T19:14:56.932708+00:00"
+        "created_at": "2026-02-25T20:04:42.995758+00:00"
       },
       "error": null,
-      "timestamp": "2026-02-25T19:14:56.961755"
+      "timestamp": "2026-02-25T20:04:43.022888"
     },
     {
       "test": "Quiz - Dramatic Look Quiz",
       "passed": true,
       "response": {
-        "id": "ac499b1a-5224-4943-bde7-2d428f9906d2",
+        "id": "c3864c26-5d6c-41fb-b2a1-a5ba9c5f2223",
         "face_shape": "square",
         "brow_density": "sparse",
         "desired_effect": "dramatic",
@@ -60,24 +60,24 @@
         "recommendation": "\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u0435\u043c \u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0441\u043d\u0443\u044e \u043f\u0440\u043e\u0446\u0435\u0434\u0443\u0440\u0443: \u043a\u043e\u0440\u0440\u0435\u043a\u0446\u0438\u044f + \u043b\u0430\u043c\u0438\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u0441 \u043e\u043a\u0440\u0430\u0448\u0438\u0432\u0430\u043d\u0438\u0435\u043c. \u042d\u0442\u043e \u0441\u043e\u0437\u0434\u0430\u0441\u0442 \u044f\u0440\u043a\u0438\u0439, \u0432\u044b\u0440\u0430\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u043e\u0431\u0440\u0430\u0437 \u0441 \u0431\u0435\u0437\u0443\u043f\u0440\u0435\u0447\u043d\u043e\u0439 \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u043e\u0439 \u0444\u043e\u0440\u043c\u044b.",
         "name": "",
         "email": "",
-        "created_at": "2026-02-25T19:14:57.116611+00:00"
+        "created_at": "2026-02-25T20:04:43.196537+00:00"
       },
       "error": null,
-      "timestamp": "2026-02-25T19:14:57.140151"
+      "timestamp": "2026-02-25T20:04:43.240527"
     },
     {
       "test": "Get Contacts",
       "passed": true,
-      "response": "Retrieved 5 contacts",
+      "response": "Retrieved 7 contacts",
       "error": null,
-      "timestamp": "2026-02-25T19:14:57.298397"
+      "timestamp": "2026-02-25T20:04:43.469161"
     },
     {
       "test": "Get Quiz Results",
       "passed": true,
-      "response": "Retrieved 8 quiz results",
+      "response": "Retrieved 11 quiz results",
       "error": null,
-      "timestamp": "2026-02-25T19:14:57.626583"
+      "timestamp": "2026-02-25T20:04:43.615961"
     }
   ]
 }
