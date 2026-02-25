@@ -454,8 +454,8 @@ export default function HomePage() {
       <FullServices t={t} />
       <PortfolioMarquee />
       <ReviewsSection lang={lang} />
-      <BookingForm lang={lang} />
-      <InstagramGrid />
+      <ContactSection lang={lang} />
+      <InstagramFeed lang={lang} />
       <AcademyButton lang={lang} />
     </div>
   );
