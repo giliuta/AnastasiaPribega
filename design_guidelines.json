@@ -1,0 +1,142 @@
+{
+  "brand_identity": {
+    "name": "PRIBEGA",
+    "core_concept": "Architectural Beauty",
+    "emotional_tone": "Expensive, Calm, Precise, Organic, Cinematic",
+    "visual_dna": "Nude/warm beige/cream palette, soft matte skin-like textures, ultra minimal layout, strong architectural grid, large negative space",
+    "target_audience": "High-end beauty clients in Cyprus, international luxury consumers"
+  },
+  "typography": {
+    "font_family_heading": "Cormorant Garamond, serif",
+    "font_family_body": "Manrope, sans-serif",
+    "scale": {
+      "h1": "text-6xl md:text-8xl font-light tracking-tight leading-[0.9]",
+      "h2": "text-4xl md:text-6xl font-normal tracking-tight",
+      "h3": "text-2xl md:text-3xl font-normal tracking-wide",
+      "body": "text-base md:text-lg font-light tracking-wide leading-relaxed",
+      "caption": "text-xs font-bold uppercase tracking-[0.2em]"
+    },
+    "installation_command": "npm install @fontsource/cormorant-garamond @fontsource/manrope"
+  },
+  "colors": {
+    "palette": {
+      "background": "#F9F7F2",
+      "surface": "#F2EFE9",
+      "surface_highlight": "#EBE5D9",
+      "text_primary": "#2C2C2C",
+      "text_secondary": "#595959",
+      "accent": "#A07E66",
+      "border": "#DND8CC",
+      "error": "#B00020"
+    },
+    "gradients": {
+      "subtle_overlay": "linear-gradient(180deg, rgba(249,247,242,0) 0%, #F9F7F2 100%)",
+      "gold_sheen": "linear-gradient(90deg, #D4AF37 0%, #F2EFE9 100%)"
+    },
+    "rules": "NO dark theme. NO purple/violet. Use warm nude/beige/cream only. Text is never pure black."
+  },
+  "layout_strategies": {
+    "spacing": {
+      "container_padding": "p-6 md:p-12 lg:p-24",
+      "section_gap": "gap-24 md:gap-32",
+      "element_gap": "gap-8"
+    },
+    "grid_system": {
+      "mode": "Bento Grid Mode A (Tetris)",
+      "columns": "grid-cols-1 md:grid-cols-12",
+      "gap": "gap-4 md:gap-8"
+    },
+    "containers": {
+      "max_width": "max-w-[1800px]",
+      "alignment": "asymmetrical"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#2C2C2C] text-[#F9F7F2] rounded-none px-8 py-4 uppercase tracking-widest hover:bg-[#A07E66] transition-colors duration-300",
+      "secondary": "border border-[#2C2C2C] text-[#2C2C2C] rounded-none px-8 py-4 uppercase tracking-widest hover:bg-[#2C2C2C] hover:text-[#F9F7F2] transition-colors duration-300",
+      "minimal": "text-[#2C2C2C] underline decoration-1 underline-offset-8 hover:text-[#A07E66] transition-colors"
+    },
+    "cards": {
+      "style": "bg-transparent border-l border-[#D4D4D4] pl-6 pr-0 py-4 hover:pl-10 transition-all duration-500",
+      "hover_effect": "No shadows. Use movement."
+    },
+    "inputs": {
+      "style": "bg-transparent border-b border-[#2C2C2C] rounded-none px-0 py-4 focus:border-[#A07E66] focus:ring-0 placeholder:text-[#595959]/50"
+    },
+    "navigation": {
+      "style": "fixed top-0 w-full z-50 mix-blend-difference text-[#F9F7F2] mix-blend-exclusion",
+      "mobile": "fullscreen menu with massive typography"
+    }
+  },
+  "visual_enhancers": {
+    "textures": {
+      "noise": "url('data:image/svg+xml;base64,...') opacity-5 overlay",
+      "blur": "backdrop-blur-xl"
+    },
+    "shapes": {
+      "arch": "SVG curve simulating a brow arch",
+      "circle": "Soft blurred orb in background"
+    },
+    "cursor": "Custom circular cursor that scales on hover",
+    "scroll": "Lenis smooth scroll is MANDATORY"
+  },
+  "assets": {
+    "hero_video": "https://customer-assets.emergentagent.com/job_47f6f644-e94f-410b-9ee0-18b3ab243391/artifacts/q9bjmbbj_IMG_7319.MP4",
+    "founder_photo": "https://customer-assets.emergentagent.com/job_47f6f644-e94f-410b-9ee0-18b3ab243391/artifacts/8sxwltdz_photo_2026-02-25_19-22-30.jpg",
+    "images": {
+      "services_brow": "https://images.pexels.com/photos/3762664/pexels-photo-3762664.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "products_lash": "https://images.pexels.com/photos/8558522/pexels-photo-8558522.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "studio_texture": "https://images.pexels.com/photos/7599545/pexels-photo-7599545.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "academy_bg": "https://images.unsplash.com/photo-1518892974594-4adbf359419c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwzfHxtaW5pbWFsaXN0JTIwYmVpZ2UlMjBhcmNoaXRlY3R1cmFsJTIwaW50ZXJpb3IlMjBzdG9uZSUyMHRleHR1cmV8ZW58MHx8fHwxNzcyMDQzODQ5fDA&ixlib=rb-4.1.0&q=85",
+      "mood_luxury": "https://images.unsplash.com/photo-1568918803912-933d961baa1a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwyfHxtYWNybyUyMGV5ZWJyb3clMjBleWVsYXNoZXMlMjBsdXh1cnklMjBtYWtldXB8ZW58MHx8fHwxNzcyMDQzODQ4fDA&ixlib=rb-4.1.0&q=85"
+    }
+  },
+  "motion_library": {
+    "libraries": [
+      "framer-motion",
+      "lenis",
+      "@studio-freight/react-lenis"
+    ],
+    "animations": {
+      "fade_up": {
+        "initial": { "opacity": 0, "y": 40 },
+        "whileInView": { "opacity": 1, "y": 0 },
+        "transition": { "duration": 0.8, "ease": "easeOut" }
+      },
+      "reveal_text": {
+        "initial": { "y": "100%" },
+        "animate": { "y": "0%" },
+        "transition": { "duration": 1, "ease": [0.16, 1, 0.3, 1] }
+      },
+      "brow_draw": {
+        "initial": { "pathLength": 0 },
+        "animate": { "pathLength": 1 },
+        "transition": { "duration": 2, "ease": "easeInOut" }
+      }
+    }
+  },
+  "universal_guidelines": [
+    "Do NOT use 'Inter' for headings. Use Cormorant Garamond.",
+    "Do NOT use standard Shadcn cards. Make them custom, minimal, borderless or 1px border-left only.",
+    "Use generous padding. p-24 is normal here.",
+    "Text is never #000000. Use #2C2C2C.",
+    "Background is never #FFFFFF. Use #F9F7F2.",
+    "Multi-language support: Russian (Default), English (Secondary). Add toggle in Nav.",
+    "Google Maps must be grayscale/desaturated using styles.",
+    "Interactive 'Brow Shape Quiz' is a key feature.",
+    "All interactive elements must have data-testid."
+  ],
+  "implementation_steps": [
+    "1. Setup Tailwind config with new colors and fonts.",
+    "2. Install Lenis for smooth scroll.",
+    "3. Build Layout Shell (Nav, Footer, SmoothScrollWrapper).",
+    "4. Implement Hero with Fullscreen Video.",
+    "5. Build 'Brand Manifesto' text reveal section.",
+    "6. Create 'Services Menu' architectural list.",
+    "7. Build 'Academy' preview section with parallax.",
+    "8. Develop 'Brow Shape Quiz' interactive component.",
+    "9. Build 'Contact' page with Map.",
+    "10. Polish with micro-interactions and transitions."
+  ]
+}
