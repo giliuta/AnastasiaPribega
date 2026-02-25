@@ -18,7 +18,7 @@ const TRAINING_VIDEOS = [
 
 export default function AcademyPage() {
   const { lang } = useLanguage();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [form, setForm] = useState({ name: '', phone: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const isRu = lang === 'ru';
@@ -27,9 +27,9 @@ export default function AcademyPage() {
     e.preventDefault();
     setSending(true);
     try {
-      await axios.post(`${API}/contact`, { ...form, message: `[ACADEMY] ${form.message}`, language: lang });
+      await axios.post(`${API}/contact`, { ...form, message: '[ACADEMY APPLICATION]', language: lang });
       setSent(true);
-      setForm({ name: '', email: '', phone: '', message: '' });
+      setForm({ name: '', phone: '' });
     } catch (err) { console.error(err); }
     setSending(false);
   };
