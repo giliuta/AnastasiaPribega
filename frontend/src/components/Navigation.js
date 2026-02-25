@@ -19,8 +19,6 @@ export default function Navigation() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
-  const [soundPlayed, setSoundPlayed] = useState(false);
   const isHome = location.pathname === '/';
 
   useEffect(() => {
