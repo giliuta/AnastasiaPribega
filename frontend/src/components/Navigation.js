@@ -122,15 +122,6 @@ export default function Navigation() {
 
           <div className="flex items-center gap-4 md:gap-6">
             <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`${isHome && !scrolled ? 'text-white' : textColor} opacity-50 hover:opacity-100 transition-opacity`}
-              data-testid="sound-toggle"
-              aria-label="Toggle sound"
-            >
-              {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            </button>
-
-            <button
               onClick={toggleLanguage}
               className={`font-body text-xs uppercase tracking-[0.2em] ${isHome && !scrolled ? 'text-white' : textColor} opacity-70 hover:opacity-100 transition-opacity`}
               data-testid="language-toggle"
