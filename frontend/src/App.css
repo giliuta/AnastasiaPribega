@@ -80,6 +80,36 @@
     animation-play-state: paused;
 }
 
+/* Media marquee (portfolio photos/videos) */
+.media-marquee-wrapper {
+    overflow: hidden;
+    width: 100%;
+}
+.media-marquee-track {
+    display: flex;
+    white-space: nowrap;
+    animation: media-scroll-left 80s linear infinite;
+    will-change: transform;
+}
+.media-marquee-track-reverse {
+    display: flex;
+    white-space: nowrap;
+    animation: media-scroll-right 90s linear infinite;
+    will-change: transform;
+}
+@keyframes media-scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+@keyframes media-scroll-right {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+}
+.media-marquee-track:hover,
+.media-marquee-track-reverse:hover {
+    animation-play-state: paused;
+}
+
 /* ============================================
    SERVICE ITEMS
    ============================================ */
