@@ -1,6 +1,8 @@
-/* PRIBEGA — Architectural Luxury Beauty */
+/* PRIBEGA — Architectural Luxury Beauty — $40K Level */
 
-/* Custom Cursor */
+/* ============================================
+   CUSTOM CURSOR
+   ============================================ */
 .pribega-cursor {
     width: 20px;
     height: 20px;
@@ -9,28 +11,30 @@
     position: fixed;
     pointer-events: none;
     z-index: 99999;
-    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                background-color 0.3s ease,
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-radius 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.4s ease,
+                border-color 0.4s ease,
                 opacity 0.3s ease;
     transform: translate(-50%, -50%);
     mix-blend-mode: exclusion;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.08);
 }
-
 .pribega-cursor.hovering {
-    width: 48px;
-    height: 24px;
-    border-radius: 24px;
+    width: 56px;
+    height: 28px;
+    border-radius: 28px;
     background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
 }
-
 .pribega-cursor.hidden {
     opacity: 0;
 }
 
-/* Noise overlay */
+/* ============================================
+   NOISE OVERLAY
+   ============================================ */
 .noise-overlay {
     position: fixed;
     top: 0;
@@ -39,118 +43,186 @@
     height: 100%;
     pointer-events: none;
     z-index: 9998;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Smooth page transitions */
-.page-transition-enter {
-    opacity: 0;
-    transform: translateY(20px);
-}
-.page-transition-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Hero video overlay */
+/* ============================================
+   HERO
+   ============================================ */
 .hero-overlay {
     background: linear-gradient(
         180deg,
-        rgba(0, 0, 0, 0.15) 0%,
-        rgba(0, 0, 0, 0.3) 50%,
+        rgba(0, 0, 0, 0.08) 0%,
+        rgba(0, 0, 0, 0.25) 40%,
         rgba(0, 0, 0, 0.5) 100%
     );
 }
 
-/* Service item hover */
+/* ============================================
+   MARQUEE
+   ============================================ */
+.marquee-wrapper {
+    overflow: hidden;
+    width: 100%;
+}
+.marquee-track {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee-scroll 40s linear infinite;
+    will-change: transform;
+}
+@keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+/* ============================================
+   SERVICE ITEMS
+   ============================================ */
 .service-item {
     transition: padding-left 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                background-color 0.3s ease;
+                background-color 0.4s ease;
 }
 .service-item:hover {
     padding-left: 2rem;
     background-color: rgba(160, 126, 102, 0.04);
 }
 
-/* Brow arch SVG animation */
+/* ============================================
+   BROW ARCH SVG
+   ============================================ */
 .brow-arch path {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
     animation: draw-brow 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
 @keyframes draw-brow {
-    to {
-        stroke-dashoffset: 0;
-    }
+    to { stroke-dashoffset: 0; }
 }
 
-/* Section blur transition */
-.section-blur {
-    transition: filter 0.6s ease;
-}
-
-/* Gallery image hover */
+/* ============================================
+   GALLERY
+   ============================================ */
 .gallery-img {
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .gallery-img:hover {
-    transform: scale(1.03);
+    transform: scale(1.04);
 }
 
-/* Quiz option */
+/* ============================================
+   QUIZ
+   ============================================ */
 .quiz-option {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     border: 1px solid #D8D4CC;
 }
 .quiz-option:hover {
     border-color: #A07E66;
     background-color: rgba(160, 126, 102, 0.04);
+    padding-left: 1.75rem;
 }
 .quiz-option.selected {
     border-color: #A07E66;
     background-color: rgba(160, 126, 102, 0.08);
 }
 
-/* Mobile menu */
-.mobile-menu-open {
-    overflow: hidden;
-}
-
-/* Scroll indicator */
+/* ============================================
+   SCROLL INDICATOR
+   ============================================ */
 @keyframes scroll-bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(8px);
-    }
-    60% {
-        transform: translateY(4px);
-    }
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(10px); }
+    60% { transform: translateY(5px); }
 }
-
 .scroll-indicator {
-    animation: scroll-bounce 2s ease infinite;
+    animation: scroll-bounce 2.5s ease infinite;
 }
 
-/* Map grayscale */
+/* ============================================
+   GOOGLE MAP
+   ============================================ */
 .map-grayscale {
     filter: grayscale(1) contrast(1.05) brightness(1.05);
-    transition: filter 0.5s ease;
+    transition: filter 0.6s ease;
 }
 .map-grayscale:hover {
-    filter: grayscale(0.5) contrast(1) brightness(1);
+    filter: grayscale(0.3) contrast(1) brightness(1);
 }
 
-/* Sound toggle */
-.sound-toggle {
-    transition: opacity 0.3s ease;
+/* ============================================
+   COUNTER ANIMATION
+   ============================================ */
+.counter-number {
+    font-variant-numeric: tabular-nums;
 }
 
-/* Text reveal clip */
-.text-reveal-clip {
+/* ============================================
+   SECTION DIVIDER LINE
+   ============================================ */
+.section-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #D8D4CC 20%, #D8D4CC 80%, transparent 100%);
+}
+
+/* ============================================
+   OUTLINE TEXT (Stroke effect for marquee)
+   ============================================ */
+.text-outline {
+    -webkit-text-stroke: 1px #D8D4CC;
+    color: transparent;
+}
+
+/* ============================================
+   SMOOTH HOVER UNDERLINE
+   ============================================ */
+.hover-line {
+    position: relative;
+    display: inline-block;
+}
+.hover-line::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #A07E66;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-line:hover::after {
+    width: 100%;
+}
+
+/* ============================================
+   GLASS MORPHISM CARD
+   ============================================ */
+.glass-card {
+    background: rgba(249, 247, 242, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(216, 212, 204, 0.4);
+}
+
+/* ============================================
+   PARALLAX IMAGE WRAPPER
+   ============================================ */
+.parallax-img-wrapper {
     overflow: hidden;
+}
+.parallax-img-wrapper img {
+    transition: transform 0.1s linear;
+    will-change: transform;
+}
+
+/* ============================================
+   MOBILE OVERRIDES
+   ============================================ */
+@media (max-width: 768px) {
+    .pribega-cursor { display: none; }
+    * { cursor: auto !important; }
 }
