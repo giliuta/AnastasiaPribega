@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import translations from '@/data/translations';
-import { Volume2, VolumeX } from 'lucide-react';
+// icons removed
 
 const navLinks = [
   { path: '/', key: 'home' },
