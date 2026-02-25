@@ -79,10 +79,6 @@ export default function AcademyPage() {
             ? 'Индивидуальное обучение по коррекции и окрашиванию бровей от Анастасии Прибега. 3 дня интенсива — теория, демонстрация и полная практика на моделях.'
             : 'Individual brow correction and tinting training by Anastasia Pribega. 3 days of intensive study — theory, demonstration, and full hands-on practice.'}
         </motion.p>
-        <motion.p className="font-heading text-2xl sm:text-3xl text-pribega-accent mt-6 font-light"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-          300&euro;
-        </motion.p>
       </section>
 
       {/* Videos */}
