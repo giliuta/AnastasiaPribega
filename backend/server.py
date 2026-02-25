@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
+import httpx
+import re
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -20,23 +22,25 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
+INSTAGRAM_USERNAME = "pribega_brows_paphos"
+
 
 class ContactSubmission(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    email: str
+    email: Optional[str] = ""
     phone: Optional[str] = ""
-    message: str
+    message: Optional[str] = ""
     language: str = "ru"
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class ContactCreate(BaseModel):
     name: str
-    email: str
+    email: Optional[str] = ""
     phone: Optional[str] = ""
-    message: str
+    message: Optional[str] = ""
     language: str = "ru"
 
 
