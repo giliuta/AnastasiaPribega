@@ -392,33 +392,72 @@ function ContactSection({ lang }) {
   );
 }
 
-/* ========== INSTAGRAM ========== */
-function InstagramGrid() {
+/* ========== INSTAGRAM FEED (LIVE) ========== */
+function InstagramFeed({ lang }) {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const isRu = lang === 'ru';
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/instagram/feed`);
+        setPosts(res.data.posts || []);
+      } catch (err) {
+        console.error('Instagram fetch error:', err);
+        // Fallback to static photos
+        setPosts(INSTA_PHOTOS.map(p => ({ image_url: p.src, permalink: 'https://www.instagram.com/pribega_brows_paphos' })));
+      }
+      setLoading(false);
+    };
+    fetchPosts();
+  }, []);
+
+  const displayPosts = posts.length > 0 ? posts.slice(0, 8) : INSTA_PHOTOS.map(p => ({ image_url: p.src, permalink: 'https://www.instagram.com/pribega_brows_paphos' }));
+
   return (
     <section className="px-6 md:px-12 lg:px-24 py-16 md:py-20" data-testid="instagram-section">
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-center mb-10">
         <MagneticButton>
           <a href="https://www.instagram.com/pribega_brows_paphos" target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.25em] text-pribega-text-secondary hover:text-pribega-accent transition-colors"
+            className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.25em] text-pribega-text-secondary hover:text-pribega-accent transition-colors"
             data-testid="instagram-follow-link" data-cursor="hover">
-            <Instagram size={14} />
+            <span className="w-8 h-8 rounded-full border border-pribega-border flex items-center justify-center">
+              <Instagram size={14} />
+            </span>
             @pribega_brows_paphos
           </a>
         </MagneticButton>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-        {INSTA_PHOTOS.map((photo, i) => (
-          <motion.a key={i} href="https://www.instagram.com/pribega_brows_paphos" target="_blank" rel="noopener noreferrer"
-            className="relative group overflow-hidden aspect-square"
-            initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
-            transition={{ delay: i * 0.05, duration: 0.5 }}>
-            <img src={photo.src} alt="PRIBEGA" className="w-full h-full object-cover gallery-img" loading="lazy" />
-            <div className="absolute inset-0 bg-pribega-text/0 group-hover:bg-pribega-text/20 transition-all duration-500 flex items-center justify-center">
-              <Instagram size={18} className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-          </motion.a>
-        ))}
-      </div>
+      
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="aspect-square bg-pribega-surface animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          {displayPosts.map((post, i) => (
+            <motion.a key={i} href={post.permalink || 'https://www.instagram.com/pribega_brows_paphos'} 
+              target="_blank" rel="noopener noreferrer"
+              className="relative group overflow-hidden aspect-square"
+              initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+              transition={{ delay: i * 0.05, duration: 0.5 }}>
+              <img src={post.image_url || post.thumbnail_url} alt="PRIBEGA" 
+                className="w-full h-full object-cover gallery-img" loading="lazy" />
+              <div className="absolute inset-0 bg-pribega-text/0 group-hover:bg-pribega-text/20 transition-all duration-500 flex items-center justify-center">
+                <Instagram size={18} className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </motion.a>
+          ))}
+        </div>
+      )}
+      
+      <motion.p className="text-center mt-6 font-body text-[10px] text-pribega-text-secondary/50 uppercase tracking-[0.15em]"
+        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+        {isRu ? 'Лента обновляется автоматически' : 'Feed updates automatically'}
+      </motion.p>
     </section>
   );
 }
