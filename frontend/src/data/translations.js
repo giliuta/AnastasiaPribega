@@ -166,10 +166,6 @@ const translations = {
       rights: 'Все права защищены.',
       tagline: 'The Standard of Beauty',
     },
-    sound: {
-      on: 'Звук включён',
-      off: 'Звук выключен',
-    },
   },
   en: {
     nav: {
@@ -337,10 +333,6 @@ const translations = {
     footer: {
       rights: 'All rights reserved.',
       tagline: 'The Standard of Beauty',
-    },
-    sound: {
-      on: 'Sound on',
-      off: 'Sound off',
     },
   },
 };
