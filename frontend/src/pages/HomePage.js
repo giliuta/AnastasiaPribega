@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import translations from '@/data/translations';
-import { ArrowDown, Instagram, Star, Clock, Users, Award, Send, Sparkles } from 'lucide-react';
+import { ArrowDown, Instagram, Star, Clock, Users, Award, Send, Sparkles, Phone, MapPin, MessageCircle } from 'lucide-react';
 import MagneticButton from '@/components/MagneticButton';
 import { TextReveal } from '@/components/TextReveal';
 import Marquee from '@/components/Marquee';
@@ -251,9 +251,9 @@ function ReviewsSection({ lang }) {
   );
 }
 
-/* ========== BOOKING FORM ========== */
-function BookingForm({ lang }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+/* ========== CONTACT SECTION ========== */
+function ContactSection({ lang }) {
+  const [form, setForm] = useState({ name: '', phone: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const isRu = lang === 'ru';
@@ -264,98 +264,129 @@ function BookingForm({ lang }) {
     try {
       await axios.post(`${API_URL}/contact`, { ...form, language: lang });
       setSent(true);
-      setForm({ name: '', email: '', phone: '', message: '' });
+      setForm({ name: '', phone: '' });
     } catch (err) { console.error(err); }
     setSending(false);
   };
 
+  const socialLinks = [
+    { icon: Instagram, href: 'https://www.instagram.com/pribega_brows_paphos', label: 'Instagram' },
+    { icon: () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>, href: 'https://www.tiktok.com/@pribega_brows', label: 'TikTok' },
+    { icon: Phone, href: 'tel:+35797463797', label: 'Phone' },
+    { icon: MessageCircle, href: 'https://wa.me/35797463797', label: 'WhatsApp' },
+    { icon: MapPin, href: 'https://maps.app.goo.gl/ipeyHYpxMbJ33gEAA', label: 'Location' },
+  ];
+
   return (
     <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28 bg-pribega-surface" data-testid="booking-form-section">
-      <div className="max-w-4xl mx-auto">
-        {sent ? (
-          <motion.div className="text-center py-16" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-            data-testid="booking-success">
-            <motion.div className="w-16 h-[1px] bg-pribega-accent mx-auto mb-8"
-              initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8 }} />
-            <p className="font-heading text-2xl sm:text-3xl font-light text-pribega-text">
-              {isRu ? 'Спасибо за заявку!' : 'Thank you!'}
-            </p>
-            <p className="font-body text-sm text-pribega-text-secondary mt-4">
-              {isRu ? 'Мы свяжемся с вами в ближайшее время.' : 'We will contact you shortly.'}
-            </p>
-          </motion.div>
-        ) : (
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
-              {/* Left side — info */}
-              <div className="lg:col-span-2 flex flex-col justify-center">
-                <p className="font-heading text-3xl sm:text-4xl font-light text-pribega-text leading-snug">
-                  {isRu ? 'Оставить заявку' : 'Book an appointment'}
-                </p>
-                <div className="w-12 h-[1px] bg-pribega-accent mt-6 mb-6" />
-                <p className="font-body text-sm text-pribega-text-secondary leading-relaxed">
-                  {isRu
-                    ? 'Заполните форму и мы свяжемся с вами для подтверждения записи. Количество мест ограничено.'
-                    : 'Fill out the form and we will contact you to confirm your appointment. Limited availability.'}
-                </p>
-                <div className="mt-8 space-y-3">
-                  <p className="font-body text-sm text-pribega-text">+357 97463797</p>
-                  <p className="font-body text-sm text-pribega-text-secondary">08:00 — 20:00</p>
-                  <p className="font-body text-xs text-pribega-accent uppercase tracking-[0.15em]">Paphos, Cyprus</p>
-                </div>
-              </div>
+      <div className="max-w-5xl mx-auto">
+        {/* Social Links Row */}
+        <motion.div className="flex flex-wrap justify-center gap-6 md:gap-10 mb-16"
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          {socialLinks.map((link, i) => (
+            <motion.a key={link.label} href={link.href} target={link.href.startsWith('tel') ? '_self' : '_blank'}
+              rel="noopener noreferrer"
+              className="group flex items-center gap-2 text-pribega-text-secondary hover:text-pribega-accent transition-all duration-300"
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+              data-testid={`social-${link.label.toLowerCase()}`} data-cursor="hover">
+              <span className="w-10 h-10 rounded-full border border-pribega-border group-hover:border-pribega-accent flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                <link.icon size={16} />
+              </span>
+              <span className="font-body text-xs uppercase tracking-[0.15em] hidden sm:block">{link.label}</span>
+            </motion.a>
+          ))}
+        </motion.div>
 
-              {/* Right side — form */}
-              <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-6" data-testid="booking-form">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
-                      {isRu ? 'Имя' : 'Name'}
-                    </label>
-                    <input type="text" required value={form.name}
-                      onChange={e => setForm({ ...form, name: e.target.value })}
-                      className="w-full bg-pribega-bg/60 border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
-                      data-testid="booking-name-input" />
-                  </div>
-                  <div>
-                    <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
-                      {isRu ? 'Телефон' : 'Phone'}
-                    </label>
-                    <input type="tel" required value={form.phone}
-                      onChange={e => setForm({ ...form, phone: e.target.value })}
-                      className="w-full bg-pribega-bg/60 border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
-                      data-testid="booking-phone-input" />
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          {/* Left — Info & Hours */}
+          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+            transition={{ duration: 0.8 }}>
+            <p className="font-heading text-3xl sm:text-4xl lg:text-5xl font-light text-pribega-text leading-[1.1]">
+              {isRu ? 'Оставить заявку' : 'Book appointment'}
+            </p>
+            
+            {/* Creative Working Hours */}
+            <div className="mt-10 relative">
+              <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-pribega-accent via-pribega-accent/50 to-transparent" />
+              <div className="space-y-4 pl-6">
+                <div className="flex items-baseline gap-4">
+                  <span className="font-heading text-5xl sm:text-6xl font-light text-pribega-accent">08</span>
+                  <span className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary">:00</span>
                 </div>
+                <div className="w-8 h-[1px] bg-pribega-border" />
+                <div className="flex items-baseline gap-4">
+                  <span className="font-heading text-5xl sm:text-6xl font-light text-pribega-text">20</span>
+                  <span className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary">:00</span>
+                </div>
+                <p className="font-body text-xs text-pribega-text-secondary uppercase tracking-[0.15em] pt-2">
+                  {isRu ? 'Ежедневно' : 'Daily'}
+                </p>
+              </div>
+            </div>
+
+            {/* Phone */}
+            <motion.a href="tel:+35797463797" 
+              className="inline-flex items-center gap-3 mt-10 group"
+              whileHover={{ x: 5 }}
+              data-testid="contact-phone-link" data-cursor="hover">
+              <span className="w-12 h-12 rounded-full bg-pribega-text text-pribega-bg flex items-center justify-center group-hover:bg-pribega-accent transition-colors duration-300">
+                <Phone size={18} />
+              </span>
+              <span className="font-heading text-xl sm:text-2xl text-pribega-text group-hover:text-pribega-accent transition-colors">
+                +357 97 463 797
+              </span>
+            </motion.a>
+          </motion.div>
+
+          {/* Right — Form */}
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}>
+            {sent ? (
+              <motion.div className="text-center py-12" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                data-testid="booking-success">
+                <motion.div className="w-16 h-[1px] bg-pribega-accent mx-auto mb-6"
+                  initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8 }} />
+                <p className="font-heading text-2xl font-light text-pribega-text">
+                  {isRu ? 'Спасибо!' : 'Thank you!'}
+                </p>
+                <p className="font-body text-sm text-pribega-text-secondary mt-3">
+                  {isRu ? 'Мы свяжемся с вами' : 'We will contact you'}
+                </p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5" data-testid="booking-form">
                 <div>
-                  <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">Email</label>
-                  <input type="email" required value={form.email}
-                    onChange={e => setForm({ ...form, email: e.target.value })}
-                    className="w-full bg-pribega-bg/60 border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
-                    data-testid="booking-email-input" />
+                  <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
+                    {isRu ? 'Имя' : 'Name'}
+                  </label>
+                  <input type="text" required value={form.name}
+                    onChange={e => setForm({ ...form, name: e.target.value })}
+                    className="w-full bg-pribega-bg/60 border border-pribega-border px-5 py-4 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors"
+                    data-testid="booking-name-input" />
                 </div>
                 <div>
                   <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
-                    {isRu ? 'Сообщение' : 'Message'}
+                    {isRu ? 'Телефон' : 'Phone'}
                   </label>
-                  <textarea rows={3} value={form.message}
-                    onChange={e => setForm({ ...form, message: e.target.value })}
-                    placeholder={isRu ? 'Какую процедуру вы хотели бы?' : 'What treatment would you like?'}
-                    className="w-full bg-pribega-bg/60 border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/40 focus:border-pribega-accent focus:outline-none transition-colors resize-none rounded-none"
-                    data-testid="booking-message-input" />
+                  <input type="tel" required value={form.phone}
+                    onChange={e => setForm({ ...form, phone: e.target.value })}
+                    placeholder="+357"
+                    className="w-full bg-pribega-bg/60 border border-pribega-border px-5 py-4 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/30 focus:border-pribega-accent focus:outline-none transition-colors"
+                    data-testid="booking-phone-input" />
                 </div>
                 <MagneticButton>
                   <button type="submit" disabled={sending}
-                    className="w-full sm:w-auto bg-pribega-text text-pribega-bg px-12 py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full bg-pribega-text text-pribega-bg py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50 flex items-center justify-center gap-2"
                     data-testid="booking-submit-button" data-cursor="hover">
                     <Send size={12} />
-                    {sending ? '...' : (isRu ? 'Отправить' : 'Send')}
+                    {sending ? '...' : (isRu ? 'Записаться' : 'Book')}
                   </button>
                 </MagneticButton>
               </form>
-            </div>
+            )}
           </motion.div>
-        )}
+        </div>
       </div>
     </section>
   );
