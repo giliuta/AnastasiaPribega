@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import translations from '@/data/translations';
-import { TextReveal, LineReveal } from '@/components/TextReveal';
+import { LineReveal } from '@/components/TextReveal';
 import MagneticButton from '@/components/MagneticButton';
-import { Play, CheckCircle } from 'lucide-react';
+import { CheckCircle, Send, Calendar, User, Award as AwardIcon } from 'lucide-react';
 import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const BASE = 'https://customer-assets.emergentagent.com/job_arch-beauty-lab/artifacts/';
 
 const TRAINING_VIDEOS = [
-  { src: `${BASE}2cjp4h54_pribega_brows_paphos_1744024220_3605458598025928199_7225780068.mp4` },
-  { src: `${BASE}5ca010zd_pribega_brows_paphos_1745825571_3620569690473332598_7225780068.mp4` },
-  { src: `${BASE}o78ih1v5_pribega_brows_paphos_1748251085_3640915937742678132_7225780068.mp4` },
+  `${BASE}7m6is1b5_pribega_brows_paphos_1736883813_3545560754309893494_7225780068.mp4`,
+  `${BASE}lqopx3ob_pribega_brows_paphos_1739972213_3571465257773037586_7225780068.mp4`,
+  `${BASE}4uh59sr9_pribega_brows_paphos_1742206767_3590212851844163810_7225780068.mp4`,
+  `${BASE}d5knb5f2_pribega_brows_paphos_1742815528_3595318625373212119_7225780068.mp4`,
 ];
 
 export default function AcademyPage() {
@@ -22,127 +23,101 @@ export default function AcademyPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const isRu = lang === 'ru';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSending(true);
     try {
-      await axios.post(`${API}/contact`, {
-        ...form,
-        message: `[ACADEMY APPLICATION] ${form.message}`,
-        language: lang,
-      });
+      await axios.post(`${API}/contact`, { ...form, message: `[ACADEMY] ${form.message}`, language: lang });
       setSent(true);
       setForm({ name: '', email: '', phone: '', message: '' });
     } catch (err) { console.error(err); }
     setSending(false);
   };
 
-  const isRu = lang === 'ru';
-
   const program = isRu ? [
-    'Архитектура формы бровей — авторская методика',
-    'Работа с различными типами лица и формами',
-    'Техники коррекции и окрашивания',
+    'Архитектура формы бровей — авторская методика PRIBEGA',
+    'Анализ типов лица и подбор идеальной формы',
+    'Техники коррекции: прореживание, моделирование',
+    'Окрашивание бровей и ресниц',
     'Ламинирование бровей и ресниц',
-    'Работа с клиентами: консультация и подбор',
-    'Создание портфолио премиального уровня',
+    'Работа с клиентами: консультация, коммуникация, сервис',
+    'Создание премиального портфолио',
   ] : [
-    'Brow architecture — proprietary methodology',
-    'Working with different face types and shapes',
-    'Correction and tinting techniques',
+    'Brow architecture — proprietary PRIBEGA methodology',
+    'Face type analysis and perfect shape selection',
+    'Correction techniques: thinning, shaping',
+    'Brow and lash tinting',
     'Brow and lash lamination',
-    'Client work: consultation and selection',
-    'Building a premium-level portfolio',
+    'Client work: consultation, communication, service',
+    'Building a premium portfolio',
   ];
 
   return (
     <div className="pt-24 md:pt-32" data-testid="academy-page">
       {/* Header */}
       <section className="px-6 md:px-12 lg:px-24 py-16 md:py-24">
-        <motion.p className="font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text-secondary mb-4"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          [ ACADEMY ]
-        </motion.p>
         <LineReveal>
           <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-light text-pribega-text leading-[0.9]" data-testid="academy-heading">
-            {t.academy.title}
+            PRIBEGA ACADEMY
           </h1>
         </LineReveal>
-        <motion.p className="font-body text-sm text-pribega-text-secondary mt-6 max-w-2xl leading-relaxed"
+        <motion.p className="font-body text-sm text-pribega-text-secondary mt-6 max-w-xl leading-relaxed"
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          {t.academy.desc}
+          {isRu
+            ? 'Индивидуальное обучение от Анастасии Прибега. 3 дня интенсивной практики — от основ архитектуры бровей до работы с реальными клиентами.'
+            : 'Individual training by Anastasia Pribega. 3 days of intensive practice — from brow architecture fundamentals to working with real clients.'}
         </motion.p>
       </section>
 
       {/* Training Videos */}
-      <section className="px-6 md:px-12 lg:px-24 pb-20 md:pb-28">
-        <motion.p className="font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text-secondary mb-8"
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-          [ {isRu ? 'ПРОЦЕСС РАБОТЫ' : 'WORK PROCESS'} ]
-        </motion.p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="px-6 md:px-12 lg:px-24 pb-16 md:pb-24">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {TRAINING_VIDEOS.map((vid, i) => (
-            <motion.div key={i} className="relative overflow-hidden rounded-sm aspect-[9/16] md:aspect-[3/4] group"
-              initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.8 }}>
+            <motion.div key={i} className="relative overflow-hidden rounded-sm aspect-[9/16] group"
+              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.7 }}>
               <video autoPlay muted loop playsInline className="w-full h-full object-cover">
-                <source src={vid.src} type="video/mp4" />
+                <source src={vid} type="video/mp4" />
               </video>
-              <div className="absolute inset-0 bg-pribega-text/5 group-hover:bg-pribega-text/0 transition-colors duration-500" />
-              <div className="absolute bottom-4 left-4">
-                <span className="font-body text-[10px] uppercase tracking-[0.2em] text-white/70 bg-pribega-text/40 px-3 py-1 backdrop-blur-sm">
-                  {isRu ? 'Видео' : 'Video'} {String(i + 1).padStart(2, '0')}
-                </span>
-              </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Program */}
-      <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28 bg-pribega-surface">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <div>
-            <motion.p className="font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text-secondary mb-6"
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-              [ {isRu ? 'ПРОГРАММА ОБУЧЕНИЯ' : 'TRAINING PROGRAM'} ]
-            </motion.p>
-            <TextReveal text={isRu ? 'Чему вы научитесь' : 'What you will learn'}
-              className="font-heading text-2xl sm:text-3xl font-light text-pribega-text leading-snug mb-10" as="h2" />
-            <div className="space-y-5">
-              {program.map((item, i) => (
-                <motion.div key={i} className="flex items-start gap-3"
-                  initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-                  transition={{ delay: i * 0.08, duration: 0.6 }}>
-                  <CheckCircle size={16} className="text-pribega-accent mt-0.5 shrink-0" />
-                  <p className="font-body text-sm text-pribega-text leading-relaxed">{item}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+      {/* Details cards */}
+      <section className="px-6 md:px-12 lg:px-24 py-16 md:py-24 bg-pribega-surface">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 md:mb-24">
+          {[
+            { icon: User, title: isRu ? 'Индивидуально' : 'Individual', desc: isRu ? 'Персональное обучение один на один с мастером' : 'Personal one-on-one training with the master' },
+            { icon: Calendar, title: isRu ? '3 дня' : '3 Days', desc: isRu ? 'Интенсивная программа с полным погружением в практику' : 'Intensive program with full immersion in practice' },
+            { icon: AwardIcon, title: isRu ? 'Сертификат' : 'Certificate', desc: isRu ? 'Сертификат PRIBEGA ACADEMY + готовое портфолио' : 'PRIBEGA ACADEMY certificate + ready portfolio' },
+          ].map((card, i) => (
+            <motion.div key={i} className="border-t border-pribega-border pt-8"
+              initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ delay: i * 0.15, duration: 0.8 }}>
+              <card.icon size={20} className="text-pribega-accent mb-4" />
+              <h3 className="font-heading text-2xl font-light text-pribega-text mb-3">{card.title}</h3>
+              <p className="font-body text-sm text-pribega-text-secondary leading-relaxed">{card.desc}</p>
+            </motion.div>
+          ))}
+        </div>
 
-          <div>
-            <motion.p className="font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text-secondary mb-6"
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-              [ {isRu ? 'ДЕТАЛИ' : 'DETAILS'} ]
-            </motion.p>
-            <div className="space-y-6">
-              {[
-                { label: isRu ? 'Формат' : 'Format', value: isRu ? 'Индивидуальное обучение' : 'Individual training' },
-                { label: isRu ? 'Продолжительность' : 'Duration', value: isRu ? 'От 3 до 5 дней' : '3 to 5 days' },
-                { label: isRu ? 'Практика' : 'Practice', value: isRu ? 'Работа с реальными клиентами' : 'Work with real clients' },
-                { label: isRu ? 'Результат' : 'Result', value: isRu ? 'Сертификат PRIBEGA ACADEMY + портфолио' : 'PRIBEGA ACADEMY certificate + portfolio' },
-                { label: isRu ? 'Локация' : 'Location', value: isRu ? 'Пафос, Кипр' : 'Paphos, Cyprus' },
-              ].map((detail, i) => (
-                <motion.div key={i} className="flex justify-between items-baseline py-3 border-b border-pribega-border"
-                  initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                  transition={{ delay: i * 0.08, duration: 0.5 }}>
-                  <span className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary">{detail.label}</span>
-                  <span className="font-body text-sm text-pribega-text">{detail.value}</span>
-                </motion.div>
-              ))}
-            </div>
+        {/* Program */}
+        <div className="max-w-2xl">
+          <p className="font-heading text-2xl sm:text-3xl font-light text-pribega-text mb-8">
+            {isRu ? 'Программа обучения' : 'Training program'}
+          </p>
+          <div className="space-y-4">
+            {program.map((item, i) => (
+              <motion.div key={i} className="flex items-start gap-3"
+                initial={{ opacity: 0, x: -15 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                transition={{ delay: i * 0.06, duration: 0.5 }}>
+                <CheckCircle size={15} className="text-pribega-accent mt-0.5 shrink-0" />
+                <p className="font-body text-sm text-pribega-text leading-relaxed">{item}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -150,53 +125,57 @@ export default function AcademyPage() {
       {/* Application Form */}
       <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28" data-testid="academy-form-section">
         <div className="max-w-xl mx-auto">
-          <motion.p className="font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text-secondary mb-6 text-center"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-            [ {isRu ? 'ЗАЯВКА' : 'APPLICATION'} ]
-          </motion.p>
-          <TextReveal text={isRu ? 'Подать заявку на обучение' : 'Apply for Training'}
-            className="font-heading text-2xl sm:text-3xl font-light text-pribega-text leading-snug mb-12 text-center" as="h2" />
+          <p className="font-heading text-2xl sm:text-3xl font-light text-pribega-text mb-10 text-center">
+            {isRu ? 'Подать заявку' : 'Apply for training'}
+          </p>
 
           {sent ? (
-            <motion.div className="text-center py-12" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-              data-testid="academy-form-success">
-              <CheckCircle size={32} className="text-pribega-accent mx-auto mb-4" />
+            <motion.div className="text-center py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} data-testid="academy-form-success">
+              <CheckCircle size={28} className="text-pribega-accent mx-auto mb-4" />
               <p className="font-heading text-xl font-light text-pribega-text">
-                {isRu ? 'Спасибо! Мы свяжемся с вами в ближайшее время.' : 'Thank you! We will contact you shortly.'}
+                {isRu ? 'Заявка отправлена!' : 'Application sent!'}
+              </p>
+              <p className="font-body text-sm text-pribega-text-secondary mt-2">
+                {isRu ? 'Мы свяжемся с вами в ближайшее время.' : 'We will contact you shortly.'}
               </p>
             </motion.div>
           ) : (
-            <motion.form onSubmit={handleSubmit} className="space-y-8" data-testid="academy-form"
-              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              {[
-                { key: 'name', type: 'text', label: isRu ? 'Имя' : 'Name', required: true },
-                { key: 'email', type: 'email', label: 'Email', required: true },
-                { key: 'phone', type: 'tel', label: isRu ? 'Телефон' : 'Phone', required: true },
-              ].map((field) => (
-                <div key={field.key}>
-                  <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{field.label}</label>
-                  <input type={field.type} required={field.required} value={form[field.key]}
-                    onChange={e => setForm({ ...form, [field.key]: e.target.value })}
-                    className="w-full bg-transparent border-b border-pribega-border px-0 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors"
-                    data-testid={`academy-${field.key}-input`} />
+            <motion.form onSubmit={handleSubmit} className="space-y-6" data-testid="academy-form"
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Имя' : 'Name'}</label>
+                  <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+                    className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
+                    data-testid="academy-name-input" />
                 </div>
-              ))}
+                <div>
+                  <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Телефон' : 'Phone'}</label>
+                  <input type="tel" required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
+                    className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
+                    data-testid="academy-phone-input" />
+                </div>
+              </div>
               <div>
-                <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
-                  {isRu ? 'Сообщение' : 'Message'}
-                </label>
-                <textarea rows={3} value={form.message}
-                  onChange={e => setForm({ ...form, message: e.target.value })}
+                <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">Email</label>
+                <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
+                  className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
+                  data-testid="academy-email-input" />
+              </div>
+              <div>
+                <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Сообщение' : 'Message'}</label>
+                <textarea rows={3} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
                   placeholder={isRu ? 'Расскажите о вашем опыте...' : 'Tell us about your experience...'}
-                  className="w-full bg-transparent border-b border-pribega-border px-0 py-3 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/40 focus:border-pribega-accent focus:outline-none transition-colors resize-none"
+                  className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/40 focus:border-pribega-accent focus:outline-none transition-colors resize-none rounded-none"
                   data-testid="academy-message-input" />
               </div>
-              <div className="text-center pt-4">
+              <div className="text-center pt-2">
                 <MagneticButton>
                   <button type="submit" disabled={sending}
-                    className="bg-pribega-text text-pribega-bg px-12 py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50"
+                    className="bg-pribega-text text-pribega-bg px-12 py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50 inline-flex items-center gap-2"
                     data-testid="academy-submit-button" data-cursor="hover">
-                    {sending ? '...' : (isRu ? 'Отправить заявку' : 'Submit Application')}
+                    <Send size={12} />
+                    {sending ? '...' : (isRu ? 'Отправить заявку' : 'Submit')}
                   </button>
                 </MagneticButton>
               </div>
