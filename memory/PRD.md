@@ -1,46 +1,32 @@
 # PRIBEGA — Architectural Luxury Beauty House
 
-## Problem Statement
-World-class $40K-level luxury website for PRIBEGA beauty brand by Anastasia Pribega, Paphos Cyprus.
+## What's Implemented
 
-## Architecture
-- **Frontend**: React 19 + Tailwind CSS + Framer Motion + Lenis smooth scroll
-- **Backend**: FastAPI + MongoDB
-- **Palette**: #F9F7F2 bg, #2C2C2C text, #A07E66 accent
-- **Typography**: Cormorant Garamond (headings) + Manrope (body)
+### V3 - Complete Single-Page Business Card Restructure
+**Homepage sections:**
+1. Hero — fullscreen video, PRIBEGA large title, subtitle, "Только по записи"
+2. Marquee text strip
+3. [ ПОЧЕМУ МЫ ] — 3 animated counters (7+ years, 1000+ clients, individual approach)
+4. [ УСЛУГИ ] — Full services menu with all categories on homepage
+5. [ ПОРТФОЛИО ] — Two-row auto-scrolling marquee with 14 real photos + 3 videos
+6. [ ОТЗЫВЫ ] — 3 client reviews with star ratings
+7. [ INSTAGRAM ] — 8-photo grid linking to Instagram
+8. PRIBEGA ACADEMY — elegant button to academy page
+9. CTA — booking call to action
 
-## What's Been Implemented (Dec 2025)
+**Academy page:** Training videos, program checklist, details table, application form
 
-### V1 - Core Website
-- 6 pages: Home, About, Services, Academy, Contact, Quiz
-- Multi-language RU/EN with context-based switching
-- Contact form + Quiz with MongoDB storage
-- Video hero, Google Maps embed, social links
+### Premium Animations (fraxbit-style)
+- [ bracket ] section labels
+- Text split/word-by-word reveals
+- Image clip-path reveals
+- Animated counters
+- Portfolio photo/video marquee (two-row, opposite directions)
+- Magnetic buttons, custom cursor, smooth scroll
+- Page transitions, preloader
 
-### V2 - Premium $40K Upgrade
-- **Luxury Preloader**: Animated letter-by-letter PRIBEGA reveal with brow arch line
-- **Text Split Reveals**: Word-by-word animations with staggered delays
-- **Image Clip-Path Reveals**: Cinematic image unveils from different directions
-- **Horizontal Scroll Gallery**: Parallax-driven horizontal image movement
-- **Marquee Strips**: Outline-text running banners between sections
-- **Magnetic Buttons**: Cursor-following elastic button effects
-- **Counter Animations**: Animated number stats on About page
-- **Page Transitions**: Fade transitions between routes via AnimatePresence
-- **Enhanced Custom Cursor**: Mix-blend-exclusion with stretch hover effect
-- **Smooth Scroll**: Lenis-based smooth page scrolling
-- **Noise Overlay**: Subtle grain texture for depth
+### Other Pages
+- About (founder editorial + stats), Services (full menu), Contact (form + map), Quiz (4-step)
+- Multi-language RU/EN, all 17 real client photos/videos integrated
 
-## Test Results
-- Backend: 100% (6/6)
-- Frontend: 98% (18/18 major features)
-
-## Backlog
-### P1
-- Real before/after client gallery images
-- SEO Schema.org structured data
-- WhatsApp booking integration
-
-### P2
-- Admin dashboard for contact/quiz submissions
-- Blog/portfolio section
-- PWA support
+## Test Results: 100% backend, 95% frontend (1 false positive)
