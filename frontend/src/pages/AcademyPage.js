@@ -168,12 +168,9 @@ export default function AcademyPage() {
 
       {/* Application Form */}
       <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28" data-testid="academy-form-section">
-        <div className="max-w-xl mx-auto">
-          <p className="font-heading text-2xl sm:text-3xl font-light text-pribega-text mb-3 text-center">
+        <div className="max-w-md mx-auto">
+          <p className="font-heading text-2xl sm:text-3xl font-light text-pribega-text mb-10 text-center">
             {isRu ? 'Записаться на обучение' : 'Apply for training'}
-          </p>
-          <p className="font-body text-sm text-pribega-text-secondary text-center mb-10">
-            {isRu ? 'Стоимость обучения — 300€' : 'Training cost — 300€'}
           </p>
 
           {sent ? (
@@ -184,42 +181,28 @@ export default function AcademyPage() {
               </p>
             </motion.div>
           ) : (
-            <motion.form onSubmit={handleSubmit} className="space-y-6" data-testid="academy-form"
+            <motion.form onSubmit={handleSubmit} className="space-y-5" data-testid="academy-form"
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Имя' : 'Name'}</label>
-                  <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-                    className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
-                    data-testid="academy-name-input" />
-                </div>
-                <div>
-                  <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Телефон' : 'Phone'}</label>
-                  <input type="tel" required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
-                    className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
-                    data-testid="academy-phone-input" />
-                </div>
+              <div>
+                <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Имя' : 'Name'}</label>
+                <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+                  className="w-full bg-pribega-surface border border-pribega-border px-5 py-4 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors"
+                  data-testid="academy-name-input" />
               </div>
               <div>
-                <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">Email</label>
-                <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors rounded-none"
-                  data-testid="academy-email-input" />
+                <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Телефон' : 'Phone'}</label>
+                <input type="tel" required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
+                  placeholder="+357"
+                  className="w-full bg-pribega-surface border border-pribega-border px-5 py-4 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/30 focus:border-pribega-accent focus:outline-none transition-colors"
+                  data-testid="academy-phone-input" />
               </div>
-              <div>
-                <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">{isRu ? 'Сообщение' : 'Message'}</label>
-                <textarea rows={3} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
-                  placeholder={isRu ? 'Расскажите о вашем опыте...' : 'Tell us about your experience...'}
-                  className="w-full bg-pribega-surface border border-pribega-border px-4 py-3.5 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/40 focus:border-pribega-accent focus:outline-none transition-colors resize-none rounded-none"
-                  data-testid="academy-message-input" />
-              </div>
-              <div className="text-center pt-2">
+              <div className="pt-2">
                 <MagneticButton>
                   <button type="submit" disabled={sending}
-                    className="bg-pribega-text text-pribega-bg px-12 py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50 inline-flex items-center gap-2"
+                    className="w-full bg-pribega-text text-pribega-bg py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50 inline-flex items-center justify-center gap-2"
                     data-testid="academy-submit-button" data-cursor="hover">
                     <Send size={12} />
-                    {sending ? '...' : (isRu ? 'Отправить заявку' : 'Submit')}
+                    {sending ? '...' : (isRu ? 'Записаться' : 'Apply')}
                   </button>
                 </MagneticButton>
               </div>
