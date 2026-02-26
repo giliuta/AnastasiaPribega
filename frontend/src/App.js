@@ -11,6 +11,7 @@ import ServicesPage from "@/pages/ServicesPage";
 import AcademyPage from "@/pages/AcademyPage";
 import ContactPage from "@/pages/ContactPage";
 import QuizPage from "@/pages/QuizPage";
+import AdminPage from "@/pages/AdminPage";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -20,6 +21,12 @@ function ScrollToTop() {
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const isAdmin = location.pathname === '/admin';
+
+  // Admin page without Layout
+  if (isAdmin) {
+    return <AdminPage />;
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -46,15 +53,21 @@ function AnimatedRoutes() {
 function App() {
   const [loaded, setLoaded] = useState(false);
   const handleComplete = useCallback(() => setLoaded(true), []);
+  const location = window.location.pathname;
+  const isAdmin = location === '/admin';
 
   return (
     <LanguageProvider>
       <BrowserRouter>
-        {!loaded && <Preloader onComplete={handleComplete} />}
+        {!loaded && !isAdmin && <Preloader onComplete={handleComplete} />}
         <ScrollToTop />
-        <Layout>
+        {isAdmin ? (
           <AnimatedRoutes />
-        </Layout>
+        ) : (
+          <Layout>
+            <AnimatedRoutes />
+          </Layout>
+        )}
       </BrowserRouter>
     </LanguageProvider>
   );
