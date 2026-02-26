@@ -255,4 +255,26 @@
 @media (max-width: 768px) {
     .pribega-cursor { display: none; }
     * { cursor: auto !important; }
+    
+    /* Better touch targets */
+    button, a, input, textarea {
+        min-height: 44px;
+    }
+    
+    /* Prevent horizontal scroll */
+    body {
+        overflow-x: hidden;
+    }
+    
+    /* Better form inputs on mobile */
+    input, textarea {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+    .font-heading {
+        letter-spacing: 0.05em;
+    }
 }
