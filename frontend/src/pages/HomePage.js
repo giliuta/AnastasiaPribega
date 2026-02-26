@@ -303,19 +303,6 @@ function ContactSection({ lang }) {
                 {isRu ? 'ежедневно' : 'daily'}
               </span>
             </div>
-
-            {/* Phone */}
-            <motion.a href="tel:+35797463797" 
-              className="inline-flex items-center gap-3 mt-6 sm:mt-8 group"
-              whileHover={{ x: 5 }}
-              data-testid="contact-phone-link">
-              <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-pribega-text text-pribega-bg flex items-center justify-center group-hover:bg-pribega-accent transition-colors duration-300">
-                <Phone size={16} />
-              </span>
-              <span className="font-heading text-lg sm:text-xl text-pribega-text group-hover:text-pribega-accent transition-colors">
-                +357 97 463 797
-              </span>
-            </motion.a>
           </motion.div>
 
           {/* Right — Form */}
