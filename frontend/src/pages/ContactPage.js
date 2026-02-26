@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import translations from '@/data/translations';
-import { Instagram, Phone, MapPin, Clock } from 'lucide-react';
+import { Instagram, Phone, MapPin, Clock, MessageCircle } from 'lucide-react';
 import { LineReveal } from '@/components/TextReveal';
 import MagneticButton from '@/components/MagneticButton';
 import axios from 'axios';
@@ -12,17 +12,18 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 export default function ContactPage() {
   const { lang } = useLanguage();
   const t = translations[lang];
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [form, setForm] = useState({ name: '', phone: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const isRu = lang === 'ru';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSending(true);
     try {
-      await axios.post(`${API}/contact`, { ...form, language: lang });
+      await axios.post(`${API}/contact`, { ...form, source: 'contact', language: lang });
       setSent(true);
-      setForm({ name: '', email: '', phone: '', message: '' });
+      setForm({ name: '', phone: '' });
     } catch (err) {
       console.error(err);
     }
@@ -82,7 +83,7 @@ export default function ContactPage() {
                   <div>
                     <p className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary mb-1">{t.contact.phone}</p>
                     <a href="tel:+35797463797" className="hover-line font-body text-sm text-pribega-text" data-testid="phone-link">
-                      +357 97463797
+                      +357 97 463 797
                     </a>
                   </div>
                 </div>
@@ -98,6 +99,12 @@ export default function ContactPage() {
                     <a href="https://www.tiktok.com/@pribega_brows" target="_blank" rel="noopener noreferrer"
                       className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-tiktok" data-cursor="hover">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.87a8.27 8.27 0 0 0 4.76 1.5v-3.4a4.85 4.85 0 0 1-1-.28z"/></svg>
+                    </a>
+                  </MagneticButton>
+                  <MagneticButton>
+                    <a href="https://wa.me/35797463797" target="_blank" rel="noopener noreferrer"
+                      className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-whatsapp" data-cursor="hover">
+                      <MessageCircle size={18} />
                     </a>
                   </MagneticButton>
                 </div>
@@ -130,54 +137,51 @@ export default function ContactPage() {
                   <svg viewBox="0 0 600 60" className="w-full max-w-xs mx-auto mb-10" fill="none">
                     <motion.path d="M0 50 C80 50, 120 8, 200 8 C280 8, 340 25, 400 25 C460 25, 520 35, 600 40" stroke="#A07E66" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2 }} />
                   </svg>
-                  <p className="font-heading text-2xl font-light text-pribega-text">{t.contact.form.success}</p>
+                  <p className="font-heading text-2xl font-light text-pribega-text">
+                    {isRu ? 'Спасибо! Мы свяжемся с вами' : 'Thank you! We will contact you'}
+                  </p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-10" data-testid="contact-form">
-                  {[
-                    { key: 'name', type: 'text', required: true },
-                    { key: 'email', type: 'email', required: true },
-                    { key: 'phone', type: 'tel', required: false },
-                  ].map((field, i) => (
-                    <motion.div
-                      key={field.key}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1, duration: 0.6 }}
-                    >
-                      <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
-                        {t.contact.form[field.key]}
-                      </label>
-                      <input
-                        type={field.type}
-                        required={field.required}
-                        value={form[field.key]}
-                        onChange={e => setForm({ ...form, [field.key]: e.target.value })}
-                        className="w-full bg-transparent border-b border-pribega-border px-0 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors"
-                        data-testid={`contact-${field.key}-input`}
-                      />
-                    </motion.div>
-                  ))}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.3, duration: 0.6 }}
+                    transition={{ duration: 0.6 }}
                   >
                     <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
-                      {t.contact.form.message}
+                      {isRu ? 'Имя' : 'Name'}
                     </label>
-                    <textarea
+                    <input
+                      type="text"
                       required
-                      rows={3}
-                      value={form.message}
-                      onChange={e => setForm({ ...form, message: e.target.value })}
-                      placeholder={t.contact.form.placeholder}
-                      className="w-full bg-transparent border-b border-pribega-border px-0 py-3 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/40 focus:border-pribega-accent focus:outline-none transition-colors resize-none"
-                      data-testid="contact-message-input"
+                      value={form.name}
+                      onChange={e => setForm({ ...form, name: e.target.value })}
+                      className="w-full bg-transparent border-b border-pribega-border px-0 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors"
+                      data-testid="contact-name-input"
                     />
                   </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1, duration: 0.6 }}
+                  >
+                    <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
+                      {isRu ? 'Телефон' : 'Phone'}
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={form.phone}
+                      onChange={e => setForm({ ...form, phone: e.target.value })}
+                      placeholder="+357"
+                      className="w-full bg-transparent border-b border-pribega-border px-0 py-3 font-body text-sm text-pribega-text placeholder:text-pribega-text-secondary/30 focus:border-pribega-accent focus:outline-none transition-colors"
+                      data-testid="contact-phone-input"
+                    />
+                  </motion.div>
+
                   <MagneticButton>
                     <button
                       type="submit"
@@ -186,7 +190,7 @@ export default function ContactPage() {
                       data-testid="contact-submit-button"
                       data-cursor="hover"
                     >
-                      {sending ? '...' : t.contact.form.send}
+                      {sending ? '...' : (isRu ? 'Записаться' : 'Book')}
                     </button>
                   </MagneticButton>
                 </form>
