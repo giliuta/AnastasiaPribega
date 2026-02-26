@@ -194,11 +194,30 @@ function FullServices({ t }) {
 
 /* ========== PORTFOLIO MARQUEE ========== */
 function PortfolioMarquee() {
+  const [portfolio, setPortfolio] = useState(DEFAULT_PORTFOLIO);
+
+  useEffect(() => {
+    const fetchMedia = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/media`);
+        if (res.data.portfolio?.length > 0) {
+          setPortfolio(res.data.portfolio);
+        }
+      } catch (err) { console.error(err); }
+    };
+    fetchMedia();
+  }, []);
+
+  const portfolioWithBase = portfolio.map(item => ({
+    ...item,
+    src: item.src.startsWith('http') ? item.src : `${BASE}${item.src}`
+  }));
+
   return (
     <section className="py-12 md:py-16 bg-pribega-surface overflow-hidden" data-testid="portfolio-section">
       <div className="media-marquee-wrapper mb-4">
         <div className="media-marquee-track" style={{ animationDuration: '25s' }}>
-          {[...PORTFOLIO_MEDIA, ...PORTFOLIO_MEDIA].map((item, i) => (
+          {[...portfolioWithBase, ...portfolioWithBase].map((item, i) => (
             <div key={i} className="shrink-0 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[220px] md:h-[220px] mx-1 sm:mx-1.5 overflow-hidden rounded-sm">
               {item.type === 'img' ? (
                 <img src={item.src} alt="PRIBEGA" className="w-full h-full object-cover gallery-img" loading="lazy" />
@@ -211,7 +230,7 @@ function PortfolioMarquee() {
       </div>
       <div className="media-marquee-wrapper">
         <div className="media-marquee-track-reverse" style={{ animationDuration: '30s' }}>
-          {[...PORTFOLIO_MEDIA.reverse(), ...PORTFOLIO_MEDIA].map((item, i) => (
+          {[...portfolioWithBase].reverse().concat([...portfolioWithBase].reverse()).map((item, i) => (
             <div key={i} className="shrink-0 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[220px] md:h-[220px] mx-1 sm:mx-1.5 overflow-hidden rounded-sm">
               {item.type === 'img' ? (
                 <img src={item.src} alt="PRIBEGA" className="w-full h-full object-cover gallery-img" loading="lazy" />
