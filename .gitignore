@@ -30,3 +30,7 @@ coverage/
 .emergent/
 memory/
 test_reports/
+-e 
+# Environment files
+*.env
+*.env.*
