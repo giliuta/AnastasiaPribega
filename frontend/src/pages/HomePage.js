@@ -138,24 +138,6 @@ function WhyStats({ lang }) {
   );
 }
 
-/* ========== QUIZ BUTTON ========== */
-function QuizButton({ lang }) {
-  return (
-    <section className="px-6 md:px-12 lg:px-24 py-14 md:py-18 text-center" data-testid="quiz-button-section">
-      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-        <MagneticButton>
-          <Link to="/quiz"
-            className="inline-flex items-center gap-3 border border-pribega-accent px-10 py-4 font-body text-[10px] uppercase tracking-[0.25em] text-pribega-accent hover:bg-pribega-accent hover:text-pribega-bg transition-all duration-500"
-            data-testid="quiz-cta-button">
-            <Sparkles size={14} />
-            {lang === 'ru' ? 'Подобрать форму бровей' : 'Find your brow shape'}
-          </Link>
-        </MagneticButton>
-      </motion.div>
-    </section>
-  );
-}
-
 /* ========== FULL SERVICES ========== */
 function FullServices({ t }) {
   const s = t.services;
