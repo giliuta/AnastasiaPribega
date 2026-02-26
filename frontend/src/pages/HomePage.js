@@ -139,24 +139,40 @@ function FullServices({ t }) {
   ];
   return (
     <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28" data-testid="services-full-section">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-14">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-16">
         {categories.map((cat, ci) => (
-          <motion.div key={ci} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ delay: ci * 0.1, duration: 0.7 }}>
-            <h3 className="font-heading text-2xl font-light text-pribega-text mb-6">{cat.title}</h3>
+          <motion.div key={ci} 
+            initial={{ opacity: 0, y: 40 }} 
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }} 
+            transition={{ delay: ci * 0.15, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
+            <motion.h3 
+              className="font-heading text-xl sm:text-2xl font-light text-pribega-text mb-8"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: ci * 0.15 + 0.2, duration: 0.6 }}>
+              {cat.title}
+            </motion.h3>
             {cat.items.map((item, i) => (
-              <div key={i} className="service-item flex justify-between items-baseline py-4 border-b border-pribega-border group">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-body text-[10px] text-pribega-border group-hover:text-pribega-accent transition-colors">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span className="font-body text-sm text-pribega-text">{item.name}</span>
+              <motion.div 
+                key={i} 
+                className="flex justify-between items-baseline py-4 border-b border-pribega-border/50 group hover:border-pribega-accent transition-colors duration-500"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: ci * 0.1 + i * 0.05, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
+                <span className="font-body text-sm text-pribega-text group-hover:text-pribega-accent transition-colors duration-300">{item.name}</span>
+                <div className="flex items-center gap-4 ml-4">
+                  <motion.div 
+                    className="hidden md:block h-[1px] bg-pribega-border/30 group-hover:bg-pribega-accent transition-all duration-500"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: 48 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: ci * 0.1 + i * 0.05 + 0.3, duration: 0.8 }} />
+                  <span className="font-heading text-base sm:text-lg text-pribega-text whitespace-nowrap">{item.price}</span>
                 </div>
-                <div className="flex items-center gap-3 ml-4">
-                  <div className="hidden md:block w-12 h-[1px] bg-pribega-border group-hover:bg-pribega-accent group-hover:w-20 transition-all duration-500" />
-                  <span className="font-heading text-lg text-pribega-text whitespace-nowrap">{item.price}</span>
-                </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         ))}
