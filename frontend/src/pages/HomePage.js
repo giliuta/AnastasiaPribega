@@ -422,25 +422,27 @@ function ContactSection({ lang }) {
 
 /* ========== INSTAGRAM FEED (LIVE) ========== */
 function InstagramFeed({ lang }) {
-  const [posts, setPosts] = useState([]);
+  const [instaPhotos, setInstaPhotos] = useState(DEFAULT_INSTAGRAM);
   const [loading, setLoading] = useState(true);
   const isRu = lang === 'ru';
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchMedia = async () => {
       try {
-        const res = await axios.get(`${API_URL}/instagram/feed`);
-        setPosts(res.data.posts || []);
-      } catch (err) {
-        console.error('Instagram fetch error:', err);
-        setPosts(INSTA_PHOTOS.map(p => ({ image_url: p.src, permalink: 'https://www.instagram.com/pribega_brows_paphos' })));
-      }
+        const res = await axios.get(`${API_URL}/media`);
+        if (res.data.instagram?.length > 0) {
+          setInstaPhotos(res.data.instagram);
+        }
+      } catch (err) { console.error(err); }
       setLoading(false);
     };
-    fetchPosts();
+    fetchMedia();
   }, []);
 
-  const displayPosts = posts.length > 0 ? posts.slice(0, 8) : INSTA_PHOTOS.map(p => ({ image_url: p.src, permalink: 'https://www.instagram.com/pribega_brows_paphos' }));
+  const displayPhotos = instaPhotos.map(p => ({
+    image_url: p.src.startsWith('http') ? p.src : `${BASE}${p.src}`,
+    permalink: 'https://www.instagram.com/pribega_brows_paphos'
+  }));
 
   return (
     <section className="px-6 md:px-12 lg:px-24 py-16 md:py-24" data-testid="instagram-section">
