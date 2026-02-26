@@ -110,30 +110,20 @@ function HeroSection({ t }) {
 
 /* ========== WHY STATS ========== */
 function WhyStats({ lang }) {
-  const items = lang === 'ru' ? [
-    { icon: Clock, num: 7, suffix: '+', label: 'Лет опыта' },
-    { icon: Users, num: 1000, suffix: '+', label: 'Довольных клиентов' },
-    { icon: Award, num: 1, suffix: '', label: 'Индивидуальный подход' },
-  ] : [
-    { icon: Clock, num: 7, suffix: '+', label: 'Years Experience' },
-    { icon: Users, num: 1000, suffix: '+', label: 'Happy Clients' },
-    { icon: Award, num: 1, suffix: '', label: 'Individual Approach' },
-  ];
+  const isRu = lang === 'ru';
   return (
-    <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28 bg-pribega-surface" data-testid="why-section">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
-        {items.map((item, i) => (
-          <motion.div key={i} className="text-center"
-            initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            transition={{ delay: i * 0.2, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
-            <item.icon size={18} className="text-pribega-accent mx-auto mb-3" />
-            <p className="font-heading text-5xl sm:text-6xl font-light text-pribega-text">
-              <Counter target={item.num} suffix={item.suffix} />
-            </p>
-            <p className="font-body text-[10px] uppercase tracking-[0.25em] text-pribega-text-secondary mt-3">{item.label}</p>
-          </motion.div>
-        ))}
-      </div>
+    <section className="px-6 md:px-12 lg:px-24 py-16 md:py-24 bg-pribega-surface" data-testid="why-section">
+      <motion.div className="text-center"
+        initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}>
+        <Users size={20} className="text-pribega-accent mx-auto mb-4" />
+        <p className="font-heading text-6xl sm:text-7xl lg:text-8xl font-light text-pribega-text">
+          <Counter target={1000} suffix="+" />
+        </p>
+        <p className="font-body text-xs uppercase tracking-[0.3em] text-pribega-text-secondary mt-4">
+          {isRu ? 'Довольных клиентов' : 'Happy Clients'}
+        </p>
+      </motion.div>
     </section>
   );
 }
