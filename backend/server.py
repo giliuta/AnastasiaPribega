@@ -137,6 +137,18 @@ class SettingsUpdate(BaseModel):
     telegram_chat_id: Optional[str] = None
 
 
+class MediaItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: str = "img"  # img or vid
+    src: str
+    position: int = 0
+
+
+class MediaConfig(BaseModel):
+    portfolio: List[MediaItem] = []
+    instagram: List[MediaItem] = []
+
+
 # ============== HELPERS ==============
 def get_brow_recommendation(face_shape, brow_density, desired_effect, lang="ru"):
     recommendations = {
