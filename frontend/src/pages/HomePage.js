@@ -471,7 +471,7 @@ function InstagramFeed({ lang }) {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {displayPosts.map((post, i) => (
+          {displayPhotos.map((post, i) => (
             <motion.a key={i} href={post.permalink || 'https://www.instagram.com/pribega_brows_paphos'} 
               target="_blank" rel="noopener noreferrer"
               className="relative group overflow-hidden aspect-square"
