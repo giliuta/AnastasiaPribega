@@ -450,8 +450,30 @@ async def admin_test_telegram(username: str = Depends(verify_admin)):
     success = await send_telegram_message("Тестовое сообщение от PRIBEGA Admin Panel")
     return {"success": success}
 
+# File Upload
+@api_router.post("/admin/upload")
+async def admin_upload_file(file: UploadFile = File(...), username: str = Depends(verify_admin)):
+    """Upload image/video file"""
+    allowed_extensions = {'.jpg', '.jpeg', '.png', '.webp', '.mp4', '.mov'}
+    file_ext = Path(file.filename).suffix.lower()
+    
+    if file_ext not in allowed_extensions:
+        raise HTTPException(status_code=400, detail=f"File type not allowed. Allowed: {allowed_extensions}")
+    
+    # Generate unique filename
+    unique_name = f"{uuid.uuid4().hex[:8]}_{file.filename}"
+    file_path = UPLOADS_DIR / unique_name
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    return {"filename": unique_name, "url": f"/api/uploads/{unique_name}"}
+
 # ============== APP SETUP ==============
 app.include_router(api_router)
+
+# Serve uploaded files
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,
