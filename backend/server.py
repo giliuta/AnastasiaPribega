@@ -487,6 +487,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve React frontend (for production)
+if FRONTEND_BUILD.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_BUILD / "static")), name="static")
+    
+    @app.get("/{full_path:path}")
+    async def serve_react(full_path: str):
+        # Serve index.html for all non-API routes (React Router)
+        file_path = FRONTEND_BUILD / full_path
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(FRONTEND_BUILD / "index.html")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
