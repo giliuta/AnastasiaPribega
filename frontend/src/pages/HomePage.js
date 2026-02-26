@@ -29,10 +29,21 @@ const PORTFOLIO_MEDIA = [
   { type: 'img', src: `${BASE}fbh4bs1b_pribega_brows_paphos_1756204128_3707631417343088414_7225780068.jpg` },
   { type: 'img', src: `${BASE}7uytkg8w_pribega_brows_paphos_1757324649_3717031024350748519_7225780068.jpg` },
   { type: 'img', src: `${BASE}hj6wj4q9_pribega_brows_paphos_1758702170_3728586510959151692_7225780068.jpg` },
+  { type: 'img', src: `${BASE}zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg` },
   { type: 'img', src: `${BASE}eq761617_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg` },
 ];
 
-const INSTA_PHOTOS = PORTFOLIO_MEDIA.filter(m => m.type === 'img').slice(0, 8);
+// Instagram photos - new photo on position 2 (first row, second)
+const INSTA_PHOTOS = [
+  PORTFOLIO_MEDIA[0],  // 1st - first photo
+  { type: 'img', src: `${BASE}zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg` },  // 2nd - NEW PHOTO
+  PORTFOLIO_MEDIA[3],  // 3rd
+  PORTFOLIO_MEDIA[4],  // 4th
+  PORTFOLIO_MEDIA[5],  // 5th
+  PORTFOLIO_MEDIA[7],  // 6th
+  PORTFOLIO_MEDIA[8],  // 7th
+  PORTFOLIO_MEDIA[9],  // 8th
+];
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const REVIEWS = {
