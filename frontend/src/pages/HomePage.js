@@ -146,7 +146,7 @@ function QuizButton({ lang }) {
         <MagneticButton>
           <Link to="/quiz"
             className="inline-flex items-center gap-3 border border-pribega-accent px-10 py-4 font-body text-[10px] uppercase tracking-[0.25em] text-pribega-accent hover:bg-pribega-accent hover:text-pribega-bg transition-all duration-500"
-            data-testid="quiz-cta-button" data-cursor="hover">
+            data-testid="quiz-cta-button">
             <Sparkles size={14} />
             {lang === 'ru' ? 'Подобрать форму бровей' : 'Find your brow shape'}
           </Link>
@@ -369,7 +369,7 @@ function ContactSection({ lang }) {
                 <MagneticButton>
                   <button type="submit" disabled={sending}
                     className="w-full bg-pribega-text text-pribega-bg py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50 flex items-center justify-center gap-2"
-                    data-testid="booking-submit-button" data-cursor="hover">
+                    data-testid="booking-submit-button">
                     <Send size={12} />
                     {sending ? '...' : (isRu ? 'Записаться' : 'Book')}
                   </button>
@@ -412,7 +412,7 @@ function InstagramFeed({ lang }) {
         <MagneticButton>
           <a href="https://www.instagram.com/pribega_brows_paphos" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.25em] text-pribega-text-secondary hover:text-pribega-accent transition-colors"
-            data-testid="instagram-follow-link" data-cursor="hover">
+            data-testid="instagram-follow-link">
             <span className="w-8 h-8 rounded-full border border-pribega-border flex items-center justify-center">
               <Instagram size={14} />
             </span>
@@ -461,7 +461,7 @@ function AcademyButton({ lang }) {
         <MagneticButton>
           <Link to="/academy"
             className="inline-block border border-pribega-text px-12 py-5 font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text hover:bg-pribega-text hover:text-pribega-bg transition-all duration-500"
-            data-testid="academy-button" data-cursor="hover">
+            data-testid="academy-button">
             PRIBEGA ACADEMY
           </Link>
         </MagneticButton>

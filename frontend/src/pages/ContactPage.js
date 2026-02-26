@@ -91,19 +91,19 @@ export default function ContactPage() {
                 <div className="flex items-center gap-5 pt-4">
                   <MagneticButton>
                     <a href="https://www.instagram.com/pribega_brows_paphos" target="_blank" rel="noopener noreferrer"
-                      className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-instagram" data-cursor="hover">
+                      className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-instagram">
                       <Instagram size={18} />
                     </a>
                   </MagneticButton>
                   <MagneticButton>
                     <a href="https://www.tiktok.com/@pribega_brows" target="_blank" rel="noopener noreferrer"
-                      className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-tiktok" data-cursor="hover">
+                      className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-tiktok">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.87a8.27 8.27 0 0 0 4.76 1.5v-3.4a4.85 4.85 0 0 1-1-.28z"/></svg>
                     </a>
                   </MagneticButton>
                   <MagneticButton>
                     <a href="https://wa.me/35797463797" target="_blank" rel="noopener noreferrer"
-                      className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-whatsapp" data-cursor="hover">
+                      className="text-pribega-text hover:text-pribega-accent transition-colors" data-testid="contact-whatsapp">
                       <MessageCircle size={18} />
                     </a>
                   </MagneticButton>
@@ -188,7 +188,7 @@ export default function ContactPage() {
                       disabled={sending}
                       className="bg-pribega-text text-pribega-bg px-10 py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50"
                       data-testid="contact-submit-button"
-                      data-cursor="hover"
+                     
                     >
                       {sending ? '...' : (isRu ? 'Записаться' : 'Book')}
                     </button>

@@ -88,7 +88,7 @@ export default function Navigation() {
               onClick={toggleLanguage}
               className={`font-body text-xs uppercase tracking-[0.2em] ${isHome && !scrolled ? 'text-white' : textColor} opacity-70 hover:opacity-100 transition-opacity`}
               data-testid="language-toggle"
-              data-cursor="hover"
+             
             >
               {lang === 'ru' ? 'EN' : 'RU'}
             </button>

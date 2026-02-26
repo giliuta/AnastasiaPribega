@@ -132,7 +132,7 @@ export default function QuizPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.08, duration: 0.5 }}
                         data-testid={`quiz-option-${opt.value}`}
-                        data-cursor="hover"
+                       
                       >
                         <span className="font-body text-[10px] text-pribega-text-secondary tracking-[0.15em] block mb-1">
                           {String(i + 1).padStart(2, '0')}
@@ -150,7 +150,7 @@ export default function QuizPage() {
                         onClick={() => setStep(s => s - 1)}
                         className="hover-line font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary"
                         data-testid="quiz-prev-button"
-                        data-cursor="hover"
+                       
                       >
                         {t.quiz.prev}
                       </button>
@@ -161,7 +161,7 @@ export default function QuizPage() {
                         disabled={!canNext || loading}
                         className="bg-pribega-text text-pribega-bg px-10 py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-20"
                         data-testid="quiz-next-button"
-                        data-cursor="hover"
+                       
                       >
                         {loading ? '...' : isLast ? t.quiz.finish : t.quiz.next}
                       </button>
@@ -202,7 +202,7 @@ export default function QuizPage() {
                     to="/contact"
                     className="bg-pribega-text text-pribega-bg px-10 py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500"
                     data-testid="quiz-book-button"
-                    data-cursor="hover"
+                   
                   >
                     {t.quiz.bookNow}
                   </Link>
@@ -211,7 +211,7 @@ export default function QuizPage() {
                   onClick={restart}
                   className="hover-line font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary"
                   data-testid="quiz-restart-button"
-                  data-cursor="hover"
+                 
                 >
                   {t.quiz.restart}
                 </button>

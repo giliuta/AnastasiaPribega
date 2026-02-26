@@ -200,7 +200,7 @@ export default function AcademyPage() {
                 <MagneticButton>
                   <button type="submit" disabled={sending}
                     className="w-full bg-pribega-text text-pribega-bg py-4 font-body text-[10px] uppercase tracking-[0.25em] hover:bg-pribega-accent transition-colors duration-500 disabled:opacity-50 inline-flex items-center justify-center gap-2"
-                    data-testid="academy-submit-button" data-cursor="hover">
+                    data-testid="academy-submit-button">
                     <Send size={12} />
                     {sending ? '...' : (isRu ? 'Записаться' : 'Apply')}
                   </button>
