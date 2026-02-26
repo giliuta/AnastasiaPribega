@@ -20,23 +20,23 @@ function ServiceCategory({ title, items, delay = 0 }) {
         {items.map((service, i) => (
           <motion.div
             key={i}
-            className="service-item flex justify-between items-baseline py-6 border-b border-pribega-border group"
+            className="service-item flex justify-between items-baseline py-6 border-b border-pribega-border/50 group hover:border-pribega-accent transition-colors duration-500"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: delay + i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             data-testid={`service-item-${i}`}
           >
-            <div className="flex items-baseline gap-4">
-              <span className="font-body text-[10px] text-pribega-border group-hover:text-pribega-accent transition-colors">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span className="font-body text-sm md:text-base text-pribega-text tracking-wide">
-                {service.name}
-              </span>
-            </div>
+            <span className="font-body text-sm md:text-base text-pribega-text tracking-wide group-hover:text-pribega-accent transition-colors duration-300">
+              {service.name}
+            </span>
             <div className="flex items-center gap-4 ml-4">
-              <div className="hidden md:block w-16 h-[1px] bg-pribega-border group-hover:bg-pribega-accent group-hover:w-24 transition-all duration-500" />
+              <motion.div 
+                className="hidden md:block h-[1px] bg-pribega-border/30 group-hover:bg-pribega-accent transition-all duration-500"
+                initial={{ width: 0 }}
+                whileInView={{ width: 48 }}
+                viewport={{ once: true }}
+                transition={{ delay: delay + i * 0.08 + 0.3, duration: 0.8 }} />
               <span className="font-heading text-lg md:text-xl text-pribega-text whitespace-nowrap">
                 {service.price}
               </span>
