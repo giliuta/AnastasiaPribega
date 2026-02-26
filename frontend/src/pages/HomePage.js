@@ -262,7 +262,7 @@ function ContactSection({ lang }) {
     e.preventDefault();
     setSending(true);
     try {
-      await axios.post(`${API_URL}/contact`, { ...form, language: lang });
+      await axios.post(`${API_URL}/contact`, { ...form, source: 'homepage', language: lang });
       setSent(true);
       setForm({ name: '', phone: '' });
     } catch (err) { console.error(err); }
