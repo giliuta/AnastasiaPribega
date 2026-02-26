@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import CustomCursor from '@/components/CustomCursor';
 
 export default function Layout({ children }) {
   useEffect(() => {
@@ -23,7 +22,6 @@ export default function Layout({ children }) {
 
   return (
     <>
-      <CustomCursor />
       <div className="noise-overlay" />
       <Navigation />
       <main className="min-h-screen">
