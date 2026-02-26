@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import translations from '@/data/translations';
-import { ArrowDown, Instagram, Star, Clock, Users, Award, Send, Sparkles, Phone, MapPin, MessageCircle } from 'lucide-react';
+import { ArrowDown, Instagram, Star, Clock, Users, Award, Send, Phone, MapPin, MessageCircle } from 'lucide-react';
 import MagneticButton from '@/components/MagneticButton';
 import { TextReveal } from '@/components/TextReveal';
 import Marquee from '@/components/Marquee';
