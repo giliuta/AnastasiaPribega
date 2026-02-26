@@ -307,6 +307,121 @@ async def admin_test_telegram(username: str = Depends(verify_admin)):
     return {"success": success}
 
 
+# ============== MEDIA MANAGEMENT ==============
+DEFAULT_PORTFOLIO = [
+    {"id": "1", "type": "img", "src": "pvqmbogu_pribega_brows_paphos_1728495274_3475192696521688954_7225780068.jpg", "position": 0},
+    {"id": "2", "type": "img", "src": "x5yz2093_pribega_brows_paphos_1735906546_3537362954963173178_7225780068.jpg", "position": 1},
+    {"id": "3", "type": "vid", "src": "2cjp4h54_pribega_brows_paphos_1744024220_3605458598025928199_7225780068.mp4", "position": 2},
+    {"id": "4", "type": "img", "src": "nh1rw38t_pribega_brows_paphos_1742551484_3593104735692336233_7225780068.jpg", "position": 3},
+    {"id": "5", "type": "img", "src": "03wjrhrp_pribega_brows_paphos_1746122179_3623057898775781846_7225780068.jpg", "position": 4},
+    {"id": "6", "type": "img", "src": "zvwydfwn_pribega_brows_paphos_1746606220_3627118329668659589_7225780068.jpg", "position": 5},
+    {"id": "7", "type": "vid", "src": "5ca010zd_pribega_brows_paphos_1745825571_3620569690473332598_7225780068.mp4", "position": 6},
+    {"id": "8", "type": "img", "src": "8qaolxc5_pribega_brows_paphos_1747055311_3630885575490620422_7225780068.jpg", "position": 7},
+    {"id": "9", "type": "img", "src": "rt4ac7nu_pribega_brows_paphos_1747912864_3638079246262784202_7225780068.jpg", "position": 8},
+    {"id": "10", "type": "img", "src": "27kwzn5v_pribega_brows_paphos_1751438010_3667650317538195564_7225780068.jpg", "position": 9},
+    {"id": "11", "type": "vid", "src": "o78ih1v5_pribega_brows_paphos_1748251085_3640915937742678132_7225780068.mp4", "position": 10},
+    {"id": "12", "type": "img", "src": "adtzj41v_pribega_brows_paphos_1755161280_3698883372948880331_7225780068.jpg", "position": 11},
+    {"id": "13", "type": "img", "src": "b1hm6e36_pribega_brows_paphos_1755248655_3699616324947209652_7225780068.jpg", "position": 12},
+    {"id": "14", "type": "img", "src": "fbh4bs1b_pribega_brows_paphos_1756204128_3707631417343088414_7225780068.jpg", "position": 13},
+    {"id": "15", "type": "img", "src": "7uytkg8w_pribega_brows_paphos_1757324649_3717031024350748519_7225780068.jpg", "position": 14},
+    {"id": "16", "type": "img", "src": "hj6wj4q9_pribega_brows_paphos_1758702170_3728586510959151692_7225780068.jpg", "position": 15},
+    {"id": "17", "type": "img", "src": "zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg", "position": 16},
+    {"id": "18", "type": "img", "src": "eq761617_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg", "position": 17},
+]
+
+DEFAULT_INSTAGRAM = [
+    {"id": "i1", "type": "img", "src": "pvqmbogu_pribega_brows_paphos_1728495274_3475192696521688954_7225780068.jpg", "position": 0},
+    {"id": "i2", "type": "img", "src": "zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg", "position": 1},
+    {"id": "i3", "type": "img", "src": "wze3e18a_pribega_brows_paphos_1758702170_3728586510959151692_7225780068.jpg", "position": 2},
+    {"id": "i4", "type": "img", "src": "03wjrhrp_pribega_brows_paphos_1746122179_3623057898775781846_7225780068.jpg", "position": 3},
+    {"id": "i5", "type": "img", "src": "zvwydfwn_pribega_brows_paphos_1746606220_3627118329668659589_7225780068.jpg", "position": 4},
+    {"id": "i6", "type": "img", "src": "8qaolxc5_pribega_brows_paphos_1747055311_3630885575490620422_7225780068.jpg", "position": 5},
+    {"id": "i7", "type": "img", "src": "rt4ac7nu_pribega_brows_paphos_1747912864_3638079246262784202_7225780068.jpg", "position": 6},
+    {"id": "i8", "type": "img", "src": "27kwzn5v_pribega_brows_paphos_1751438010_3667650317538195564_7225780068.jpg", "position": 7},
+]
+
+
+@api_router.get("/admin/media")
+async def admin_get_media(username: str = Depends(verify_admin)):
+    """Get all media (portfolio and instagram)"""
+    media = await db.media_config.find_one({"key": "media"}, {"_id": 0})
+    if not media:
+        return {
+            "portfolio": DEFAULT_PORTFOLIO,
+            "instagram": DEFAULT_INSTAGRAM
+        }
+    return {
+        "portfolio": media.get("portfolio", DEFAULT_PORTFOLIO),
+        "instagram": media.get("instagram", DEFAULT_INSTAGRAM)
+    }
+
+
+@api_router.put("/admin/media")
+async def admin_update_media(config: MediaConfig, username: str = Depends(verify_admin)):
+    """Update media configuration"""
+    await db.media_config.update_one(
+        {"key": "media"},
+        {"$set": {
+            "key": "media",
+            "portfolio": [item.model_dump() for item in config.portfolio],
+            "instagram": [item.model_dump() for item in config.instagram],
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    return {"status": "updated"}
+
+
+@api_router.put("/admin/media/instagram/{position}")
+async def admin_update_instagram_photo(position: int, src: str, username: str = Depends(verify_admin)):
+    """Update a single Instagram photo by position"""
+    media = await db.media_config.find_one({"key": "media"}, {"_id": 0})
+    instagram = media.get("instagram", DEFAULT_INSTAGRAM) if media else DEFAULT_INSTAGRAM
+    
+    if 0 <= position < len(instagram):
+        instagram[position]["src"] = src
+        await db.media_config.update_one(
+            {"key": "media"},
+            {"$set": {"instagram": instagram, "updated_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=True
+        )
+        return {"status": "updated", "position": position}
+    raise HTTPException(status_code=400, detail="Invalid position")
+
+
+@api_router.put("/admin/media/portfolio/{position}")
+async def admin_update_portfolio_photo(position: int, src: str, username: str = Depends(verify_admin)):
+    """Update a single portfolio photo by position"""
+    media = await db.media_config.find_one({"key": "media"}, {"_id": 0})
+    portfolio = media.get("portfolio", DEFAULT_PORTFOLIO) if media else DEFAULT_PORTFOLIO
+    
+    if 0 <= position < len(portfolio):
+        portfolio[position]["src"] = src
+        await db.media_config.update_one(
+            {"key": "media"},
+            {"$set": {"portfolio": portfolio, "updated_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=True
+        )
+        return {"status": "updated", "position": position}
+    raise HTTPException(status_code=400, detail="Invalid position")
+
+
+# Public endpoint for frontend to get media
+@api_router.get("/media")
+async def get_media():
+    """Public endpoint - get media for display"""
+    media = await db.media_config.find_one({"key": "media"}, {"_id": 0})
+    if not media:
+        return {
+            "portfolio": DEFAULT_PORTFOLIO,
+            "instagram": DEFAULT_INSTAGRAM
+        }
+    return {
+        "portfolio": media.get("portfolio", DEFAULT_PORTFOLIO),
+        "instagram": media.get("instagram", DEFAULT_INSTAGRAM)
+    }
+
+
 def get_default_services():
     return [
         {
