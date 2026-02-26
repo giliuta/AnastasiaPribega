@@ -236,7 +236,7 @@ const translations = {
       complex: {
         title: 'Complex',
         items: [
-          { name: 'Brow + Lash Lamination', price: '70€' },
+          { name: 'Brow lamination with tinting & correction + Lash lamination with tinting', price: '70€' },
         ],
       },
       additional: {
