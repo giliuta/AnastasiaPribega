@@ -278,10 +278,10 @@ function ContactSection({ lang }) {
   ];
 
   return (
-    <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28 bg-pribega-surface" data-testid="booking-form-section">
+    <section className="px-6 md:px-12 lg:px-24 py-16 md:py-24 bg-pribega-surface" data-testid="booking-form-section">
       <div className="max-w-5xl mx-auto">
         {/* Social Links Row */}
-        <motion.div className="flex flex-wrap justify-center gap-6 md:gap-10 mb-16"
+        <motion.div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-12 md:mb-16"
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           {socialLinks.map((link, i) => (
             <motion.a key={link.label} href={link.href} target={link.href.startsWith('tel') ? '_self' : '_blank'}
@@ -289,51 +289,42 @@ function ContactSection({ lang }) {
               className="group flex items-center gap-2 text-pribega-text-secondary hover:text-pribega-accent transition-all duration-300"
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              data-testid={`social-${link.label.toLowerCase()}`} data-cursor="hover">
-              <span className="w-10 h-10 rounded-full border border-pribega-border group-hover:border-pribega-accent flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-                <link.icon size={16} />
+              data-testid={`social-${link.label.toLowerCase()}`}>
+              <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-pribega-border group-hover:border-pribega-accent flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                <link.icon size={14} />
               </span>
-              <span className="font-body text-xs uppercase tracking-[0.15em] hidden sm:block">{link.label}</span>
+              <span className="font-body text-[10px] uppercase tracking-[0.15em] hidden sm:block">{link.label}</span>
             </motion.a>
           ))}
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           {/* Left — Info & Hours */}
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-            transition={{ duration: 0.8 }}>
-            <p className="font-heading text-3xl sm:text-4xl lg:text-5xl font-light text-pribega-text leading-[1.1]">
+            transition={{ duration: 0.8 }} className="text-center lg:text-left">
+            <p className="font-heading text-2xl sm:text-3xl lg:text-4xl font-light text-pribega-text leading-[1.1]">
               {isRu ? 'Оставить заявку' : 'Book appointment'}
             </p>
             
-            {/* Creative Working Hours */}
-            <div className="mt-10 relative">
-              <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-pribega-accent via-pribega-accent/50 to-transparent" />
-              <div className="space-y-4 pl-6">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-heading text-5xl sm:text-6xl font-light text-pribega-accent">08</span>
-                  <span className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary">:00</span>
-                </div>
-                <div className="w-8 h-[1px] bg-pribega-border" />
-                <div className="flex items-baseline gap-4">
-                  <span className="font-heading text-5xl sm:text-6xl font-light text-pribega-text">20</span>
-                  <span className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary">:00</span>
-                </div>
-                <p className="font-body text-xs text-pribega-text-secondary uppercase tracking-[0.15em] pt-2">
-                  {isRu ? 'Ежедневно' : 'Daily'}
-                </p>
-              </div>
+            {/* Elegant Working Hours */}
+            <div className="mt-6 sm:mt-8 flex items-center justify-center lg:justify-start gap-3">
+              <Clock size={14} className="text-pribega-accent" />
+              <span className="font-body text-sm text-pribega-text">08:00 — 20:00</span>
+              <span className="w-1 h-1 rounded-full bg-pribega-border" />
+              <span className="font-body text-xs text-pribega-text-secondary uppercase tracking-wider">
+                {isRu ? 'ежедневно' : 'daily'}
+              </span>
             </div>
 
             {/* Phone */}
             <motion.a href="tel:+35797463797" 
-              className="inline-flex items-center gap-3 mt-10 group"
+              className="inline-flex items-center gap-3 mt-6 sm:mt-8 group"
               whileHover={{ x: 5 }}
-              data-testid="contact-phone-link" data-cursor="hover">
-              <span className="w-12 h-12 rounded-full bg-pribega-text text-pribega-bg flex items-center justify-center group-hover:bg-pribega-accent transition-colors duration-300">
-                <Phone size={18} />
+              data-testid="contact-phone-link">
+              <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-pribega-text text-pribega-bg flex items-center justify-center group-hover:bg-pribega-accent transition-colors duration-300">
+                <Phone size={16} />
               </span>
-              <span className="font-heading text-xl sm:text-2xl text-pribega-text group-hover:text-pribega-accent transition-colors">
+              <span className="font-heading text-lg sm:text-xl text-pribega-text group-hover:text-pribega-accent transition-colors">
                 +357 97 463 797
               </span>
             </motion.a>
