@@ -11,40 +11,40 @@ import axios from 'axios';
 
 const HERO_VIDEO = 'https://customer-assets.emergentagent.com/job_47f6f644-e94f-410b-9ee0-18b3ab243391/artifacts/q9bjmbbj_IMG_7319.MP4';
 const BASE = 'https://customer-assets.emergentagent.com/job_arch-beauty-lab/artifacts/';
-
-const PORTFOLIO_MEDIA = [
-  { type: 'img', src: `${BASE}pvqmbogu_pribega_brows_paphos_1728495274_3475192696521688954_7225780068.jpg` },
-  { type: 'img', src: `${BASE}x5yz2093_pribega_brows_paphos_1735906546_3537362954963173178_7225780068.jpg` },
-  { type: 'vid', src: `${BASE}2cjp4h54_pribega_brows_paphos_1744024220_3605458598025928199_7225780068.mp4` },
-  { type: 'img', src: `${BASE}nh1rw38t_pribega_brows_paphos_1742551484_3593104735692336233_7225780068.jpg` },
-  { type: 'img', src: `${BASE}03wjrhrp_pribega_brows_paphos_1746122179_3623057898775781846_7225780068.jpg` },
-  { type: 'img', src: `${BASE}zvwydfwn_pribega_brows_paphos_1746606220_3627118329668659589_7225780068.jpg` },
-  { type: 'vid', src: `${BASE}5ca010zd_pribega_brows_paphos_1745825571_3620569690473332598_7225780068.mp4` },
-  { type: 'img', src: `${BASE}8qaolxc5_pribega_brows_paphos_1747055311_3630885575490620422_7225780068.jpg` },
-  { type: 'img', src: `${BASE}rt4ac7nu_pribega_brows_paphos_1747912864_3638079246262784202_7225780068.jpg` },
-  { type: 'img', src: `${BASE}27kwzn5v_pribega_brows_paphos_1751438010_3667650317538195564_7225780068.jpg` },
-  { type: 'vid', src: `${BASE}o78ih1v5_pribega_brows_paphos_1748251085_3640915937742678132_7225780068.mp4` },
-  { type: 'img', src: `${BASE}adtzj41v_pribega_brows_paphos_1755161280_3698883372948880331_7225780068.jpg` },
-  { type: 'img', src: `${BASE}b1hm6e36_pribega_brows_paphos_1755248655_3699616324947209652_7225780068.jpg` },
-  { type: 'img', src: `${BASE}fbh4bs1b_pribega_brows_paphos_1756204128_3707631417343088414_7225780068.jpg` },
-  { type: 'img', src: `${BASE}7uytkg8w_pribega_brows_paphos_1757324649_3717031024350748519_7225780068.jpg` },
-  { type: 'img', src: `${BASE}hj6wj4q9_pribega_brows_paphos_1758702170_3728586510959151692_7225780068.jpg` },
-  { type: 'img', src: `${BASE}zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg` },
-  { type: 'img', src: `${BASE}eq761617_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg` },
-];
-
-// Instagram photos - custom order for grid
-const INSTA_PHOTOS = [
-  PORTFOLIO_MEDIA[0],  // 1st
-  { type: 'img', src: `${BASE}zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg` },  // 2nd
-  { type: 'img', src: `${BASE}wze3e18a_pribega_brows_paphos_1758702170_3728586510959151692_7225780068.jpg` },  // 3rd - NEW
-  PORTFOLIO_MEDIA[4],  // 4th
-  PORTFOLIO_MEDIA[5],  // 5th
-  PORTFOLIO_MEDIA[7],  // 6th
-  PORTFOLIO_MEDIA[8],  // 7th
-  PORTFOLIO_MEDIA[9],  // 8th
-];
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Fallback data
+const DEFAULT_PORTFOLIO = [
+  { type: 'img', src: 'pvqmbogu_pribega_brows_paphos_1728495274_3475192696521688954_7225780068.jpg' },
+  { type: 'img', src: 'x5yz2093_pribega_brows_paphos_1735906546_3537362954963173178_7225780068.jpg' },
+  { type: 'vid', src: '2cjp4h54_pribega_brows_paphos_1744024220_3605458598025928199_7225780068.mp4' },
+  { type: 'img', src: 'nh1rw38t_pribega_brows_paphos_1742551484_3593104735692336233_7225780068.jpg' },
+  { type: 'img', src: '03wjrhrp_pribega_brows_paphos_1746122179_3623057898775781846_7225780068.jpg' },
+  { type: 'img', src: 'zvwydfwn_pribega_brows_paphos_1746606220_3627118329668659589_7225780068.jpg' },
+  { type: 'vid', src: '5ca010zd_pribega_brows_paphos_1745825571_3620569690473332598_7225780068.mp4' },
+  { type: 'img', src: '8qaolxc5_pribega_brows_paphos_1747055311_3630885575490620422_7225780068.jpg' },
+  { type: 'img', src: 'rt4ac7nu_pribega_brows_paphos_1747912864_3638079246262784202_7225780068.jpg' },
+  { type: 'img', src: '27kwzn5v_pribega_brows_paphos_1751438010_3667650317538195564_7225780068.jpg' },
+  { type: 'vid', src: 'o78ih1v5_pribega_brows_paphos_1748251085_3640915937742678132_7225780068.mp4' },
+  { type: 'img', src: 'adtzj41v_pribega_brows_paphos_1755161280_3698883372948880331_7225780068.jpg' },
+  { type: 'img', src: 'b1hm6e36_pribega_brows_paphos_1755248655_3699616324947209652_7225780068.jpg' },
+  { type: 'img', src: 'fbh4bs1b_pribega_brows_paphos_1756204128_3707631417343088414_7225780068.jpg' },
+  { type: 'img', src: '7uytkg8w_pribega_brows_paphos_1757324649_3717031024350748519_7225780068.jpg' },
+  { type: 'img', src: 'hj6wj4q9_pribega_brows_paphos_1758702170_3728586510959151692_7225780068.jpg' },
+  { type: 'img', src: 'zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg' },
+  { type: 'img', src: 'eq761617_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg' },
+];
+
+const DEFAULT_INSTAGRAM = [
+  { type: 'img', src: 'pvqmbogu_pribega_brows_paphos_1728495274_3475192696521688954_7225780068.jpg' },
+  { type: 'img', src: 'zl2sl36w_pribega_brows_paphos_1759490047_3735195701098377478_7225780068.jpg' },
+  { type: 'img', src: 'wze3e18a_pribega_brows_paphos_1758702170_3728586510959151692_7225780068.jpg' },
+  { type: 'img', src: '03wjrhrp_pribega_brows_paphos_1746122179_3623057898775781846_7225780068.jpg' },
+  { type: 'img', src: 'zvwydfwn_pribega_brows_paphos_1746606220_3627118329668659589_7225780068.jpg' },
+  { type: 'img', src: '8qaolxc5_pribega_brows_paphos_1747055311_3630885575490620422_7225780068.jpg' },
+  { type: 'img', src: 'rt4ac7nu_pribega_brows_paphos_1747912864_3638079246262784202_7225780068.jpg' },
+  { type: 'img', src: '27kwzn5v_pribega_brows_paphos_1751438010_3667650317538195564_7225780068.jpg' },
+];
 
 const REVIEWS = {
   ru: [
