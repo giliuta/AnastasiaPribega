@@ -220,18 +220,50 @@ function ReviewsSection({ lang }) {
   const reviews = REVIEWS[lang];
   return (
     <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28" data-testid="reviews-section">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
         {reviews.map((review, i) => (
-          <motion.div key={i} className="border-t border-pribega-border pt-8"
-            initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            transition={{ delay: i * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-            <div className="flex gap-1 mb-5">
-              {[...Array(5)].map((_, j) => <Star key={j} size={11} className="fill-pribega-accent text-pribega-accent" />)}
+          <motion.div key={i} className="relative"
+            initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }}
+            transition={{ delay: i * 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}>
+            <motion.div 
+              className="absolute -top-4 left-0 right-0 h-[1px] bg-pribega-border origin-left"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.2 + 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }} />
+            <div className="pt-8">
+              <motion.div className="flex gap-1 mb-6"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 + 0.5, duration: 0.5 }}>
+                {[...Array(5)].map((_, j) => (
+                  <motion.div key={j}
+                    initial={{ scale: 0, rotate: -180 }}
+                    whileInView={{ scale: 1, rotate: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.2 + 0.5 + j * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}>
+                    <Star size={12} className="fill-pribega-accent text-pribega-accent" />
+                  </motion.div>
+                ))}
+              </motion.div>
+              <motion.p 
+                className="font-heading text-base sm:text-lg font-light text-pribega-text leading-relaxed italic mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 + 0.6, duration: 0.7 }}>
+                &ldquo;{review.text}&rdquo;
+              </motion.p>
+              <motion.p 
+                className="font-body text-[10px] uppercase tracking-[0.25em] text-pribega-text-secondary"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 + 0.8, duration: 0.5 }}>
+                &mdash; {review.author}
+              </motion.p>
             </div>
-            <p className="font-heading text-base font-light text-pribega-text leading-relaxed italic mb-6">
-              &ldquo;{review.text}&rdquo;
-            </p>
-            <p className="font-body text-xs uppercase tracking-[0.2em] text-pribega-text-secondary">&mdash; {review.author}</p>
           </motion.div>
         ))}
       </div>
