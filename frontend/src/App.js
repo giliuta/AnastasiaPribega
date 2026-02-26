@@ -10,7 +10,6 @@ import AboutPage from "@/pages/AboutPage";
 import ServicesPage from "@/pages/ServicesPage";
 import AcademyPage from "@/pages/AcademyPage";
 import ContactPage from "@/pages/ContactPage";
-import QuizPage from "@/pages/QuizPage";
 import AdminPage from "@/pages/AdminPage";
 
 function ScrollToTop() {
@@ -43,7 +42,6 @@ function AnimatedRoutes() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/academy" element={<AcademyPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/quiz" element={<QuizPage />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
