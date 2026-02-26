@@ -1,16 +1,17 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import secrets
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 import httpx
-import re
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -21,26 +22,80 @@ db = client[os.environ['DB_NAME']]
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
+security = HTTPBasic()
 
+# Configuration
 INSTAGRAM_USERNAME = "pribega_brows_paphos"
+TELEGRAM_BOT_TOKEN = "8250726160:AAECX4YHCIbT2LDBhMLUE_6hj13CUBRIMFM"
+TELEGRAM_CHAT_ID = None  # Will be set dynamically
+
+# Admin credentials
+ADMIN_USERNAME = "Admin"
+ADMIN_PASSWORD = "Admin"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
+# ============== TELEGRAM ==============
+async def send_telegram_message(text: str):
+    """Send message to Telegram"""
+    try:
+        # Get chat_id from database or use stored one
+        settings = await db.settings.find_one({"key": "telegram"}, {"_id": 0})
+        chat_id = settings.get("chat_id") if settings else None
+        
+        if not chat_id:
+            logger.warning("Telegram chat_id not configured")
+            return False
+            
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.post(url, json={
+                "chat_id": chat_id,
+                "text": text,
+                "parse_mode": "HTML"
+            }, timeout=10.0)
+            
+            if response.status_code == 200:
+                logger.info("Telegram message sent successfully")
+                return True
+            else:
+                logger.error(f"Telegram error: {response.text}")
+                return False
+    except Exception as e:
+        logger.error(f"Telegram send error: {e}")
+        return False
+
+
+# ============== AUTH ==============
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+    correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    if not (correct_username and correct_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials", headers={"WWW-Authenticate": "Basic"})
+    return credentials.username
+
+
+# ============== MODELS ==============
 class ContactSubmission(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    email: Optional[str] = ""
     phone: Optional[str] = ""
-    message: Optional[str] = ""
+    source: Optional[str] = "website"
     language: str = "ru"
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    status: str = "new"
 
 
 class ContactCreate(BaseModel):
     name: str
-    email: Optional[str] = ""
     phone: Optional[str] = ""
-    message: Optional[str] = ""
+    source: Optional[str] = "website"
     language: str = "ru"
 
 
@@ -66,22 +121,40 @@ class QuizCreate(BaseModel):
     email: Optional[str] = ""
 
 
+class ServiceItem(BaseModel):
+    name: str
+    price: str
+
+
+class ServiceCategory(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title_ru: str
+    title_en: str
+    items: List[ServiceItem]
+
+
+class SettingsUpdate(BaseModel):
+    telegram_chat_id: Optional[str] = None
+
+
+# ============== HELPERS ==============
 def get_brow_recommendation(face_shape, brow_density, desired_effect, lang="ru"):
     recommendations = {
         "ru": {
-            "natural": "Мы рекомендуем натуральную коррекцию с подчёркиванием вашей природной формы. Процедура ламинирования идеально подойдёт для создания ухоженного, но естественного образа.",
-            "defined": "Вам подойдёт архитектурная коррекция с лёгким окрашиванием. Мы создадим чёткую, выразительную форму, которая подчеркнёт геометрию вашего лица.",
-            "dramatic": "Рекомендуем комплексную процедуру: коррекция + ламинирование с окрашиванием. Это создаст яркий, выразительный образ с безупречной архитектурой формы."
+            "natural": "Мы рекомендуем натуральную коррекцию с подчёркиванием вашей природной формы.",
+            "defined": "Вам подойдёт архитектурная коррекция с лёгким окрашиванием.",
+            "dramatic": "Рекомендуем комплексную процедуру: коррекция + ламинирование с окрашиванием."
         },
         "en": {
-            "natural": "We recommend natural correction that enhances your natural brow shape. A lamination treatment would be perfect for creating a polished yet natural look.",
-            "defined": "An architectural correction with light tinting would suit you. We'll create a precise, expressive shape that accentuates your facial geometry.",
-            "dramatic": "We recommend a comprehensive treatment: correction + lamination with tinting. This will create a striking, expressive look with flawless architectural form."
+            "natural": "We recommend natural correction that enhances your natural brow shape.",
+            "defined": "An architectural correction with light tinting would suit you.",
+            "dramatic": "We recommend a comprehensive treatment: correction + lamination with tinting."
         }
     }
     return recommendations.get(lang, recommendations["en"]).get(desired_effect, recommendations[lang]["natural"])
 
 
+# ============== PUBLIC ENDPOINTS ==============
 @api_router.get("/")
 async def root():
     return {"message": "PRIBEGA API"}
@@ -92,13 +165,31 @@ async def submit_contact(input_data: ContactCreate):
     submission = ContactSubmission(**input_data.model_dump())
     doc = submission.model_dump()
     await db.contacts.insert_one(doc)
+    
+    # Send to Telegram
+    source_text = {
+        "website": "Сайт",
+        "academy": "Академия",
+        "homepage": "Главная"
+    }.get(input_data.source, input_data.source)
+    
+    telegram_msg = f"""
+<b>Новая заявка PRIBEGA</b>
+
+<b>Имя:</b> {input_data.name}
+<b>Телефон:</b> {input_data.phone or 'Не указан'}
+<b>Источник:</b> {source_text}
+<b>Время:</b> {datetime.now().strftime('%d.%m.%Y %H:%M')}
+"""
+    await send_telegram_message(telegram_msg)
+    
     result = await db.contacts.find_one({"id": doc["id"]}, {"_id": 0})
     return result
 
 
 @api_router.get("/contacts", response_model=List[ContactSubmission])
 async def get_contacts():
-    contacts = await db.contacts.find({}, {"_id": 0}).to_list(1000)
+    contacts = await db.contacts.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return contacts
 
 
@@ -109,10 +200,7 @@ async def submit_quiz(input_data: QuizCreate):
         input_data.brow_density,
         input_data.desired_effect
     )
-    quiz_result = QuizResult(
-        **input_data.model_dump(),
-        recommendation=recommendation
-    )
+    quiz_result = QuizResult(**input_data.model_dump(), recommendation=recommendation)
     doc = quiz_result.model_dump()
     await db.quiz_results.insert_one(doc)
     result = await db.quiz_results.find_one({"id": doc["id"]}, {"_id": 0})
@@ -125,43 +213,146 @@ async def get_quiz_results():
     return results
 
 
-# Instagram Feed API
-class InstagramPost(BaseModel):
-    image_url: str
-    thumbnail_url: Optional[str] = ""
-    permalink: str
-    caption: Optional[str] = ""
-    media_type: str = "IMAGE"
-
-class InstagramFeed(BaseModel):
-    posts: List[InstagramPost]
-    username: str
-    last_updated: str
+# ============== ADMIN ENDPOINTS ==============
+@api_router.post("/admin/login")
+async def admin_login(credentials: HTTPBasicCredentials = Depends(security)):
+    verify_admin(credentials)
+    return {"status": "success", "message": "Logged in"}
 
 
+@api_router.get("/admin/stats")
+async def admin_stats(username: str = Depends(verify_admin)):
+    total_contacts = await db.contacts.count_documents({})
+    new_contacts = await db.contacts.count_documents({"status": "new"})
+    total_quiz = await db.quiz_results.count_documents({})
+    
+    # Get recent contacts
+    recent = await db.contacts.find({}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
+    
+    return {
+        "total_contacts": total_contacts,
+        "new_contacts": new_contacts,
+        "total_quiz": total_quiz,
+        "recent_contacts": recent
+    }
+
+
+@api_router.get("/admin/contacts")
+async def admin_get_contacts(username: str = Depends(verify_admin)):
+    contacts = await db.contacts.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return contacts
+
+
+@api_router.patch("/admin/contacts/{contact_id}")
+async def admin_update_contact(contact_id: str, status: str, username: str = Depends(verify_admin)):
+    await db.contacts.update_one({"id": contact_id}, {"$set": {"status": status}})
+    return {"status": "updated"}
+
+
+@api_router.delete("/admin/contacts/{contact_id}")
+async def admin_delete_contact(contact_id: str, username: str = Depends(verify_admin)):
+    await db.contacts.delete_one({"id": contact_id})
+    return {"status": "deleted"}
+
+
+@api_router.get("/admin/services")
+async def admin_get_services(username: str = Depends(verify_admin)):
+    services = await db.services.find({}, {"_id": 0}).to_list(100)
+    if not services:
+        # Return default services
+        return get_default_services()
+    return services
+
+
+@api_router.put("/admin/services")
+async def admin_update_services(services: List[ServiceCategory], username: str = Depends(verify_admin)):
+    await db.services.delete_many({})
+    for service in services:
+        await db.services.insert_one(service.model_dump())
+    return {"status": "updated"}
+
+
+@api_router.get("/admin/settings")
+async def admin_get_settings(username: str = Depends(verify_admin)):
+    settings = await db.settings.find_one({"key": "telegram"}, {"_id": 0})
+    return settings or {"key": "telegram", "chat_id": ""}
+
+
+@api_router.put("/admin/settings")
+async def admin_update_settings(settings: SettingsUpdate, username: str = Depends(verify_admin)):
+    if settings.telegram_chat_id:
+        await db.settings.update_one(
+            {"key": "telegram"},
+            {"$set": {"key": "telegram", "chat_id": settings.telegram_chat_id}},
+            upsert=True
+        )
+    return {"status": "updated"}
+
+
+@api_router.post("/admin/test-telegram")
+async def admin_test_telegram(username: str = Depends(verify_admin)):
+    success = await send_telegram_message("Тестовое сообщение от PRIBEGA Admin Panel")
+    return {"success": success}
+
+
+def get_default_services():
+    return [
+        {
+            "id": "brows",
+            "title_ru": "Брови",
+            "title_en": "Brows",
+            "items": [
+                {"name": "Прореживание бровей", "price": "30€"},
+                {"name": "Коррекция без окрашивания", "price": "30€"},
+                {"name": "Коррекция с окрашиванием", "price": "35€"},
+                {"name": "Ламинирование без окрашивания", "price": "40€"},
+                {"name": "Ламинирование с окрашиванием", "price": "50€"},
+            ]
+        },
+        {
+            "id": "lashes",
+            "title_ru": "Ресницы",
+            "title_en": "Lashes",
+            "items": [
+                {"name": "Окрашивание ресниц", "price": "15€"},
+                {"name": "Ламинирование без окрашивания", "price": "20€"},
+                {"name": "Ламинирование с окрашиванием", "price": "30€"},
+            ]
+        },
+        {
+            "id": "complex",
+            "title_ru": "Комплекс",
+            "title_en": "Complex",
+            "items": [
+                {"name": "Ламинирование бровей + ресниц", "price": "70€"},
+            ]
+        },
+        {
+            "id": "additional",
+            "title_ru": "Дополнительно",
+            "title_en": "Additional",
+            "items": [
+                {"name": "Удаление нежелательных волосков", "price": "10€"},
+            ]
+        }
+    ]
+
+
+# ============== INSTAGRAM ==============
 @api_router.get("/instagram/feed")
 async def get_instagram_feed():
-    """
-    Fetch Instagram feed for PRIBEGA account.
-    Uses scraping approach with fallback to cached/static data.
-    """
     try:
-        # Try to get cached data first
         cached = await db.instagram_cache.find_one({"username": INSTAGRAM_USERNAME}, {"_id": 0})
-        
-        # Check if cache is fresh (less than 1 hour old)
         if cached:
             cache_time = datetime.fromisoformat(cached.get("last_updated", "2000-01-01"))
             if (datetime.now(timezone.utc) - cache_time.replace(tzinfo=timezone.utc)).total_seconds() < 3600:
                 return cached
         
-        # Try to fetch fresh data
         async with httpx.AsyncClient() as http_client:
-            # Use Instagram's public API endpoint for profile data
             response = await http_client.get(
                 f"https://www.instagram.com/api/v1/users/web_profile_info/?username={INSTAGRAM_USERNAME}",
                 headers={
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                     "X-IG-App-ID": "936619743392459",
                 },
                 timeout=10.0
@@ -179,8 +370,8 @@ async def get_instagram_feed():
                         "image_url": node.get("display_url", ""),
                         "thumbnail_url": node.get("thumbnail_src", ""),
                         "permalink": f"https://www.instagram.com/p/{node.get('shortcode', '')}/",
-                        "caption": (node.get("edge_media_to_caption", {}).get("edges", [{}])[0].get("node", {}).get("text", ""))[:100] if node.get("edge_media_to_caption", {}).get("edges") else "",
-                        "media_type": node.get("__typename", "GraphImage").replace("Graph", "").upper()
+                        "caption": "",
+                        "media_type": "IMAGE"
                     })
                 
                 if posts:
@@ -189,35 +380,36 @@ async def get_instagram_feed():
                         "username": INSTAGRAM_USERNAME,
                         "last_updated": datetime.now(timezone.utc).isoformat()
                     }
-                    
-                    # Update cache
                     await db.instagram_cache.update_one(
                         {"username": INSTAGRAM_USERNAME},
                         {"$set": feed_data},
                         upsert=True
                     )
-                    
                     return feed_data
         
-        # Return cached data if fresh fetch failed
         if cached:
             return cached
             
     except Exception as e:
         logger.error(f"Instagram fetch error: {e}")
-        
-        # Return cached data on error
         cached = await db.instagram_cache.find_one({"username": INSTAGRAM_USERNAME}, {"_id": 0})
         if cached:
             return cached
     
-    # Final fallback - return empty
     return {
         "posts": [],
         "username": INSTAGRAM_USERNAME,
-        "last_updated": datetime.now(timezone.utc).isoformat(),
-        "error": "Could not fetch Instagram feed"
+        "last_updated": datetime.now(timezone.utc).isoformat()
     }
+
+
+# ============== SERVICES PUBLIC ==============
+@api_router.get("/services")
+async def get_services():
+    services = await db.services.find({}, {"_id": 0}).to_list(100)
+    if not services:
+        return get_default_services()
+    return services
 
 
 app.include_router(api_router)
@@ -225,16 +417,10 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 
 @app.on_event("shutdown")
