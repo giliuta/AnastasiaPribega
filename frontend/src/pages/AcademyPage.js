@@ -76,7 +76,7 @@ export default function AcademyPage() {
         <motion.p className="font-body text-sm text-pribega-text-secondary mt-6 max-w-xl leading-relaxed"
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           {isRu
-            ? 'Индивидуальное обучение по коррекции и окрашиванию бровей от Анастасии Прибега. 3 дня интенсива — теория, демонстрация и полная практика на моделях.'
+            ? 'Индивидуальное обучение по коррекции и окрашиванию бровей от Анастасии Прибеги. 3 дня интенсива — теория, демонстрация и полная практика на моделях.'
             : 'Individual brow correction and tinting training by Anastasia Pribega. 3 days of intensive study — theory, demonstration, and full hands-on practice.'}
         </motion.p>
       </section>
