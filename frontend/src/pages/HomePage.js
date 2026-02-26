@@ -403,7 +403,6 @@ function InstagramFeed({ lang }) {
         setPosts(res.data.posts || []);
       } catch (err) {
         console.error('Instagram fetch error:', err);
-        // Fallback to static photos
         setPosts(INSTA_PHOTOS.map(p => ({ image_url: p.src, permalink: 'https://www.instagram.com/pribega_brows_paphos' })));
       }
       setLoading(false);
@@ -414,62 +413,82 @@ function InstagramFeed({ lang }) {
   const displayPosts = posts.length > 0 ? posts.slice(0, 8) : INSTA_PHOTOS.map(p => ({ image_url: p.src, permalink: 'https://www.instagram.com/pribega_brows_paphos' }));
 
   return (
-    <section className="px-6 md:px-12 lg:px-24 py-16 md:py-20" data-testid="instagram-section">
-      <div className="flex justify-center mb-10">
+    <section className="px-6 md:px-12 lg:px-24 py-16 md:py-24" data-testid="instagram-section">
+      <motion.div className="flex justify-center mb-12"
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
         <MagneticButton>
           <a href="https://www.instagram.com/pribega_brows_paphos" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.25em] text-pribega-text-secondary hover:text-pribega-accent transition-colors"
             data-testid="instagram-follow-link">
-            <span className="w-8 h-8 rounded-full border border-pribega-border flex items-center justify-center">
-              <Instagram size={14} />
-            </span>
+            <motion.span 
+              className="w-10 h-10 rounded-full border border-pribega-border flex items-center justify-center"
+              whileHover={{ scale: 1.1, borderColor: '#A07E66' }}
+              transition={{ duration: 0.3 }}>
+              <Instagram size={16} />
+            </motion.span>
             @pribega_brows_paphos
           </a>
         </MagneticButton>
-      </div>
+      </motion.div>
       
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="aspect-square bg-pribega-surface animate-pulse" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {displayPosts.map((post, i) => (
             <motion.a key={i} href={post.permalink || 'https://www.instagram.com/pribega_brows_paphos'} 
               target="_blank" rel="noopener noreferrer"
               className="relative group overflow-hidden aspect-square"
-              initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.05, duration: 0.5 }}>
-              <img src={post.image_url || post.thumbnail_url} alt="PRIBEGA" 
-                className="w-full h-full object-cover gallery-img" loading="lazy" />
-              <div className="absolute inset-0 bg-pribega-text/0 group-hover:bg-pribega-text/20 transition-all duration-500 flex items-center justify-center">
-                <Instagram size={18} className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
+              initial={{ opacity: 0, scale: 0.8, y: 30 }} 
+              whileInView={{ opacity: 1, scale: 1, y: 0 }} 
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: i * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>
+              <motion.img src={post.image_url || post.thumbnail_url} alt="PRIBEGA" 
+                className="w-full h-full object-cover"
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.6 }}
+                loading="lazy" />
+              <motion.div 
+                className="absolute inset-0 bg-pribega-text/0 flex items-center justify-center"
+                whileHover={{ backgroundColor: 'rgba(44, 44, 44, 0.3)' }}
+                transition={{ duration: 0.3 }}>
+                <Instagram size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </motion.div>
             </motion.a>
           ))}
         </div>
       )}
-      
-      <motion.p className="text-center mt-6 font-body text-[10px] text-pribega-text-secondary/50 uppercase tracking-[0.15em]"
-        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-        {isRu ? 'Лента обновляется автоматически' : 'Feed updates automatically'}
-      </motion.p>
     </section>
   );
 }
 
 /* ========== ACADEMY BUTTON ========== */
 function AcademyButton({ lang }) {
+  const isRu = lang === 'ru';
   return (
-    <section className="px-6 md:px-12 lg:px-24 py-16 md:py-20 text-center bg-pribega-surface" data-testid="academy-button-section">
-      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+    <section className="px-6 md:px-12 lg:px-24 py-20 md:py-28 text-center bg-pribega-surface" data-testid="academy-button-section">
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }} 
+        whileInView={{ opacity: 1, y: 0 }} 
+        viewport={{ once: true }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}>
+        <motion.p 
+          className="font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text-secondary mb-6"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.6 }}>
+          {isRu ? 'Обучение для мастеров' : 'Training for professionals'}
+        </motion.p>
         <MagneticButton>
           <Link to="/academy"
-            className="inline-block border border-pribega-text px-12 py-5 font-body text-[10px] uppercase tracking-[0.3em] text-pribega-text hover:bg-pribega-text hover:text-pribega-bg transition-all duration-500"
+            className="inline-block border border-pribega-text px-14 py-5 font-heading text-lg sm:text-xl tracking-[0.2em] text-pribega-text hover:bg-pribega-text hover:text-pribega-bg transition-all duration-500"
             data-testid="academy-button">
-            PRIBEGA ACADEMY
+            ACADEMY
           </Link>
         </MagneticButton>
       </motion.div>
