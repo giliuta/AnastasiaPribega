@@ -197,9 +197,9 @@ function PortfolioMarquee() {
   return (
     <section className="py-12 md:py-16 bg-pribega-surface overflow-hidden" data-testid="portfolio-section">
       <div className="media-marquee-wrapper mb-4">
-        <div className="media-marquee-track" style={{ animationDuration: '40s' }}>
-          {[...PORTFOLIO_MEDIA.slice(0, 9), ...PORTFOLIO_MEDIA.slice(0, 9)].map((item, i) => (
-            <div key={i} className="shrink-0 w-[160px] h-[160px] md:w-[220px] md:h-[220px] mx-1.5 overflow-hidden rounded-sm">
+        <div className="media-marquee-track" style={{ animationDuration: '25s' }}>
+          {[...PORTFOLIO_MEDIA, ...PORTFOLIO_MEDIA].map((item, i) => (
+            <div key={i} className="shrink-0 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[220px] md:h-[220px] mx-1 sm:mx-1.5 overflow-hidden rounded-sm">
               {item.type === 'img' ? (
                 <img src={item.src} alt="PRIBEGA" className="w-full h-full object-cover gallery-img" loading="lazy" />
               ) : (
@@ -210,9 +210,9 @@ function PortfolioMarquee() {
         </div>
       </div>
       <div className="media-marquee-wrapper">
-        <div className="media-marquee-track-reverse" style={{ animationDuration: '50s' }}>
-          {[...PORTFOLIO_MEDIA.slice(8), ...PORTFOLIO_MEDIA.slice(8)].map((item, i) => (
-            <div key={i} className="shrink-0 w-[160px] h-[160px] md:w-[220px] md:h-[220px] mx-1.5 overflow-hidden rounded-sm">
+        <div className="media-marquee-track-reverse" style={{ animationDuration: '30s' }}>
+          {[...PORTFOLIO_MEDIA.reverse(), ...PORTFOLIO_MEDIA].map((item, i) => (
+            <div key={i} className="shrink-0 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[220px] md:h-[220px] mx-1 sm:mx-1.5 overflow-hidden rounded-sm">
               {item.type === 'img' ? (
                 <img src={item.src} alt="PRIBEGA" className="w-full h-full object-cover gallery-img" loading="lazy" />
               ) : (
