@@ -139,20 +139,6 @@ export default function Navigation() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-              >
-                <Link
-                  to="/quiz"
-                  onClick={() => setMenuOpen(false)}
-                  className="font-body text-sm uppercase tracking-[0.2em] text-pribega-accent mt-8 border-b border-pribega-accent pb-1"
-                  data-testid="mobile-nav-quiz"
-                >
-                  {t.nav.quiz}
-                </Link>
-              </motion.div>
             </nav>
           </motion.div>
         )}
