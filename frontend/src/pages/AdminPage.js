@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { 
@@ -20,9 +20,7 @@ function LoginForm({ onLogin }) {
     setLoading(true);
     setError('');
     try {
-      await axios.post(`${API}/admin/login`, {}, {
-        auth: { username, password }
-      });
+      await axios.post(`${API}/admin/login`, {}, { auth: { username, password } });
       localStorage.setItem('adminAuth', btoa(`${username}:${password}`));
       onLogin();
     } catch (err) {
@@ -41,12 +39,12 @@ function LoginForm({ onLogin }) {
           <div>
             <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">Логин</label>
             <input type="text" value={username} onChange={e => setUsername(e.target.value)}
-              className="w-full bg-pribega-surface border border-pribega-border px-4 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors" />
+              className="w-full bg-pribega-surface border border-pribega-border px-4 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none" />
           </div>
           <div>
             <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">Пароль</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full bg-pribega-surface border border-pribega-border px-4 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none transition-colors" />
+              className="w-full bg-pribega-surface border border-pribega-border px-4 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none" />
           </div>
           {error && <p className="font-body text-xs text-red-500 text-center">{error}</p>}
           <button type="submit" disabled={loading}
@@ -61,7 +59,7 @@ function LoginForm({ onLogin }) {
 
 function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('contacts');
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({ total_contacts: 0, new_contacts: 0 });
   const [contacts, setContacts] = useState([]);
   const [services, setServices] = useState([]);
   const [settings, setSettings] = useState({ chat_id: '' });
@@ -69,7 +67,8 @@ function Dashboard({ onLogout }) {
   const [loading, setLoading] = useState(true);
   const [editingServices, setEditingServices] = useState(false);
   const [editingPhoto, setEditingPhoto] = useState(null);
-  const [newPhotoUrl, setNewPhotoUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const getAuthHeader = () => {
     const auth = localStorage.getItem('adminAuth');
@@ -92,7 +91,6 @@ function Dashboard({ onLogout }) {
       setSettings(settingsRes.data);
       setMedia(mediaRes.data);
     } catch (err) {
-      console.error(err);
       if (err.response?.status === 401) {
         localStorage.removeItem('adminAuth');
         onLogout();
@@ -104,40 +102,30 @@ function Dashboard({ onLogout }) {
   useEffect(() => { fetchData(); }, []);
 
   const updateContactStatus = async (id, status) => {
-    try {
-      await axios.patch(`${API}/admin/contacts/${id}?status=${status}`, {}, { headers: getAuthHeader() });
-      setContacts(contacts.map(c => c.id === id ? { ...c, status } : c));
-    } catch (err) { console.error(err); }
+    await axios.patch(`${API}/admin/contacts/${id}?status=${status}`, {}, { headers: getAuthHeader() });
+    setContacts(contacts.map(c => c.id === id ? { ...c, status } : c));
   };
 
   const deleteContact = async (id) => {
     if (!window.confirm('Удалить эту заявку?')) return;
-    try {
-      await axios.delete(`${API}/admin/contacts/${id}`, { headers: getAuthHeader() });
-      setContacts(contacts.filter(c => c.id !== id));
-    } catch (err) { console.error(err); }
+    await axios.delete(`${API}/admin/contacts/${id}`, { headers: getAuthHeader() });
+    setContacts(contacts.filter(c => c.id !== id));
   };
 
   const saveSettings = async () => {
-    try {
-      await axios.put(`${API}/admin/settings`, { telegram_chat_id: settings.chat_id }, { headers: getAuthHeader() });
-      alert('Настройки сохранены');
-    } catch (err) { console.error(err); }
+    await axios.put(`${API}/admin/settings`, { telegram_chat_id: settings.chat_id }, { headers: getAuthHeader() });
+    alert('Настройки сохранены');
   };
 
   const testTelegram = async () => {
-    try {
-      const res = await axios.post(`${API}/admin/test-telegram`, {}, { headers: getAuthHeader() });
-      alert(res.data.success ? 'Сообщение отправлено!' : 'Ошибка отправки');
-    } catch (err) { alert('Ошибка отправки'); }
+    const res = await axios.post(`${API}/admin/test-telegram`, {}, { headers: getAuthHeader() });
+    alert(res.data.success ? 'Сообщение отправлено!' : 'Ошибка отправки');
   };
 
   const saveServices = async () => {
-    try {
-      await axios.put(`${API}/admin/services`, services, { headers: getAuthHeader() });
-      setEditingServices(false);
-      alert('Услуги сохранены');
-    } catch (err) { console.error(err); }
+    await axios.put(`${API}/admin/services`, services, { headers: getAuthHeader() });
+    setEditingServices(false);
+    alert('Услуги сохранены');
   };
 
   const updateServiceItem = (catIndex, itemIndex, field, value) => {
@@ -146,20 +134,29 @@ function Dashboard({ onLogout }) {
     setServices(newServices);
   };
 
-  const updatePhoto = async (type, position) => {
-    if (!newPhotoUrl.trim()) return;
+  // Handle file upload
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !editingPhoto) return;
+    
+    setUploading(true);
     try {
-      // Extract filename from full URL or use as-is
-      let filename = newPhotoUrl;
-      if (newPhotoUrl.includes('/')) {
-        filename = newPhotoUrl.split('/').pop();
-      }
+      const formData = new FormData();
+      formData.append('file', file);
       
-      const endpoint = type === 'instagram' 
-        ? `${API}/admin/media/instagram/${position}?src=${encodeURIComponent(filename)}`
-        : `${API}/admin/media/portfolio/${position}?src=${encodeURIComponent(filename)}`;
+      const uploadRes = await axios.post(`${API}/admin/upload`, formData, {
+        headers: { ...getAuthHeader(), 'Content-Type': 'multipart/form-data' }
+      });
       
-      await axios.put(endpoint, {}, { headers: getAuthHeader() });
+      const filename = uploadRes.data.filename;
+      const { type, position } = editingPhoto;
+      
+      // Update the photo
+      await axios.put(
+        `${API}/admin/media/${type}/${position}?src=${encodeURIComponent(filename)}`,
+        {},
+        { headers: getAuthHeader() }
+      );
       
       // Update local state
       const newMedia = { ...media };
@@ -167,12 +164,17 @@ function Dashboard({ onLogout }) {
       setMedia(newMedia);
       
       setEditingPhoto(null);
-      setNewPhotoUrl('');
-      alert('Фото обновлено! Обновите страницу сайта чтобы увидеть изменения.');
+      alert('Фото обновлено! Обновите страницу сайта.');
     } catch (err) {
-      console.error(err);
-      alert('Ошибка при обновлении фото');
+      alert('Ошибка загрузки: ' + (err.response?.data?.detail || err.message));
     }
+    setUploading(false);
+  };
+
+  const getPhotoUrl = (src) => {
+    if (src.startsWith('http')) return src;
+    if (src.includes('/')) return `${API}/${src}`;
+    return `${MEDIA_BASE}${src}`;
   };
 
   const formatDate = (dateStr) => {
@@ -207,22 +209,16 @@ function Dashboard({ onLogout }) {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {stats && (
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-pribega-surface border border-pribega-border p-6">
-              <p className="font-heading text-3xl font-light text-pribega-text">{stats.total_contacts}</p>
-              <p className="font-body text-[10px] uppercase tracking-[0.15em] text-pribega-text-secondary mt-1">Всего заявок</p>
-            </div>
-            <div className="bg-pribega-surface border border-pribega-border p-6">
-              <p className="font-heading text-3xl font-light text-pribega-accent">{stats.new_contacts}</p>
-              <p className="font-body text-[10px] uppercase tracking-[0.15em] text-pribega-text-secondary mt-1">Новых</p>
-            </div>
-            <div className="bg-pribega-surface border border-pribega-border p-6">
-              <p className="font-heading text-3xl font-light text-pribega-text">{stats.total_quiz}</p>
-              <p className="font-body text-[10px] uppercase tracking-[0.15em] text-pribega-text-secondary mt-1">Квиз</p>
-            </div>
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-pribega-surface border border-pribega-border p-6">
+            <p className="font-heading text-3xl font-light text-pribega-text">{stats.total_contacts}</p>
+            <p className="font-body text-[10px] uppercase tracking-[0.15em] text-pribega-text-secondary mt-1">Всего заявок</p>
           </div>
-        )}
+          <div className="bg-pribega-surface border border-pribega-border p-6">
+            <p className="font-heading text-3xl font-light text-pribega-accent">{stats.new_contacts}</p>
+            <p className="font-body text-[10px] uppercase tracking-[0.15em] text-pribega-text-secondary mt-1">Новых</p>
+          </div>
+        </div>
 
         <div className="flex gap-1 mb-6 border-b border-pribega-border">
           {tabs.map(tab => (
@@ -242,85 +238,82 @@ function Dashboard({ onLogout }) {
           </div>
         ) : (
           <>
-            {/* Contacts Tab */}
+            {/* CONTACTS TAB */}
             {activeTab === 'contacts' && (
               <div className="space-y-3">
                 {contacts.length === 0 ? (
                   <p className="text-center py-10 font-body text-sm text-pribega-text-secondary">Нет заявок</p>
-                ) : (
-                  contacts.map(contact => (
-                    <motion.div key={contact.id}
-                      className={`bg-pribega-surface border p-4 flex items-center gap-4 ${contact.status === 'new' ? 'border-pribega-accent' : 'border-pribega-border'}`}
-                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <p className="font-heading text-base font-light text-pribega-text">{contact.name}</p>
-                          {contact.status === 'new' && (
-                            <span className="px-2 py-0.5 bg-pribega-accent/10 text-pribega-accent font-body text-[9px] uppercase tracking-wider">Новая</span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4 mt-2">
-                          <a href={`tel:${contact.phone}`} className="flex items-center gap-1 font-body text-sm text-pribega-text hover:text-pribega-accent">
-                            <Phone size={12} />{contact.phone}
-                          </a>
-                          <span className="flex items-center gap-1 font-body text-xs text-pribega-text-secondary">
-                            <Calendar size={12} />{formatDate(contact.created_at)}
-                          </span>
-                          <span className="font-body text-[10px] uppercase tracking-wider text-pribega-text-secondary">{contact.source}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
+                ) : contacts.map(contact => (
+                  <div key={contact.id} className={`bg-pribega-surface border p-4 flex items-center gap-4 ${contact.status === 'new' ? 'border-pribega-accent' : 'border-pribega-border'}`}>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <p className="font-heading text-base font-light text-pribega-text">{contact.name}</p>
                         {contact.status === 'new' && (
-                          <button onClick={() => updateContactStatus(contact.id, 'processed')}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors" title="Обработано">
-                            <Check size={16} />
-                          </button>
+                          <span className="px-2 py-0.5 bg-pribega-accent/10 text-pribega-accent font-body text-[9px] uppercase">Новая</span>
                         )}
-                        <button onClick={() => deleteContact(contact.id)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded transition-colors" title="Удалить">
-                          <Trash2 size={16} />
-                        </button>
                       </div>
-                    </motion.div>
-                  ))
-                )}
+                      <div className="flex items-center gap-4 mt-2">
+                        <a href={`tel:${contact.phone}`} className="flex items-center gap-1 font-body text-sm text-pribega-text hover:text-pribega-accent">
+                          <Phone size={12} />{contact.phone}
+                        </a>
+                        <span className="flex items-center gap-1 font-body text-xs text-pribega-text-secondary">
+                          <Calendar size={12} />{formatDate(contact.created_at)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {contact.status === 'new' && (
+                        <button onClick={() => updateContactStatus(contact.id, 'processed')} className="p-2 text-green-600 hover:bg-green-50 rounded">
+                          <Check size={16} />
+                        </button>
+                      )}
+                      <button onClick={() => deleteContact(contact.id)} className="p-2 text-red-500 hover:bg-red-50 rounded">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
-            {/* Media Tab */}
+            {/* MEDIA TAB */}
             {activeTab === 'media' && (
               <div className="space-y-8">
-                {/* Instagram Section */}
+                <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,video/*" className="hidden" />
+                
+                {/* Instagram */}
                 <div className="bg-pribega-surface border border-pribega-border p-6">
-                  <h3 className="font-heading text-lg font-light text-pribega-text mb-4">Instagram (8 фото)</h3>
+                  <h3 className="font-heading text-lg font-light text-pribega-text mb-2">Instagram (8 фото)</h3>
                   <p className="font-body text-xs text-pribega-text-secondary mb-4">Нажмите на фото чтобы заменить</p>
                   <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
                     {media.instagram.map((item, i) => (
-                      <div key={i} className="relative group">
-                        <img src={`${MEDIA_BASE}${item.src}`} alt={`Instagram ${i+1}`}
-                          className="w-full aspect-square object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => { setEditingPhoto({ type: 'instagram', position: i }); setNewPhotoUrl(''); }} />
+                      <div key={i} className="relative group cursor-pointer" onClick={() => { setEditingPhoto({ type: 'instagram', position: i }); fileInputRef.current?.click(); }}>
+                        <img src={getPhotoUrl(item.src)} alt="" className="w-full aspect-square object-cover hover:opacity-70 transition-opacity" />
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/30 transition-opacity">
+                          <Upload size={20} className="text-white" />
+                        </div>
                         <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1 rounded">{i+1}</div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Portfolio Section */}
+                {/* Portfolio */}
                 <div className="bg-pribega-surface border border-pribega-border p-6">
-                  <h3 className="font-heading text-lg font-light text-pribega-text mb-4">Портфолио ({media.portfolio.length} фото/видео)</h3>
+                  <h3 className="font-heading text-lg font-light text-pribega-text mb-2">Портфолио ({media.portfolio.length} фото/видео)</h3>
                   <p className="font-body text-xs text-pribega-text-secondary mb-4">Нажмите на фото чтобы заменить</p>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-2">
+                  <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
                     {media.portfolio.map((item, i) => (
-                      <div key={i} className="relative group">
+                      <div key={i} className="relative group cursor-pointer" onClick={() => { if(item.type === 'img') { setEditingPhoto({ type: 'portfolio', position: i }); fileInputRef.current?.click(); }}}>
                         {item.type === 'img' ? (
-                          <img src={`${MEDIA_BASE}${item.src}`} alt={`Portfolio ${i+1}`}
-                            className="w-full aspect-square object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                            onClick={() => { setEditingPhoto({ type: 'portfolio', position: i }); setNewPhotoUrl(''); }} />
+                          <>
+                            <img src={getPhotoUrl(item.src)} alt="" className="w-full aspect-square object-cover hover:opacity-70 transition-opacity" />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/30 transition-opacity">
+                              <Upload size={16} className="text-white" />
+                            </div>
+                          </>
                         ) : (
-                          <div className="w-full aspect-square bg-pribega-bg flex items-center justify-center text-pribega-text-secondary text-[10px]">
-                            VIDEO
-                          </div>
+                          <div className="w-full aspect-square bg-pribega-bg flex items-center justify-center text-pribega-text-secondary text-[10px]">VIDEO</div>
                         )}
                         <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1 rounded">{i+1}</div>
                       </div>
@@ -328,96 +321,48 @@ function Dashboard({ onLogout }) {
                   </div>
                 </div>
 
-                {/* Edit Photo Modal */}
-                {editingPhoto && (
-                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <motion.div className="bg-pribega-bg border border-pribega-border p-6 max-w-lg w-full"
-                      initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-heading text-lg font-light text-pribega-text">
-                          Заменить фото #{editingPhoto.position + 1} ({editingPhoto.type === 'instagram' ? 'Instagram' : 'Портфолио'})
-                        </h4>
-                        <button onClick={() => setEditingPhoto(null)} className="text-pribega-text-secondary hover:text-pribega-text">
-                          <X size={20} />
-                        </button>
-                      </div>
-                      
-                      <div className="mb-4">
-                        <p className="font-body text-xs text-pribega-text-secondary mb-2">Текущее фото:</p>
-                        <img src={`${MEDIA_BASE}${media[editingPhoto.type][editingPhoto.position].src}`} 
-                          alt="Current" className="w-32 h-32 object-cover" />
-                      </div>
-                      
-                      <div className="mb-4">
-                        <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">
-                          Имя файла нового фото
-                        </label>
-                        <input type="text" value={newPhotoUrl} onChange={e => setNewPhotoUrl(e.target.value)}
-                          placeholder="example_photo.jpg"
-                          className="w-full bg-pribega-surface border border-pribega-border px-4 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none" />
-                        <p className="font-body text-[10px] text-pribega-text-secondary mt-2">
-                          Загрузите фото в чат и скопируйте имя файла (например: abc123_photo.jpg)
-                        </p>
-                      </div>
-                      
-                      <div className="flex gap-3">
-                        <button onClick={() => updatePhoto(editingPhoto.type, editingPhoto.position)}
-                          className="flex-1 bg-pribega-text text-pribega-bg py-3 font-body text-[10px] uppercase tracking-[0.2em] hover:bg-pribega-accent transition-colors flex items-center justify-center gap-2">
-                          <Save size={14} /> Сохранить
-                        </button>
-                        <button onClick={() => setEditingPhoto(null)}
-                          className="px-6 py-3 border border-pribega-border font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary hover:border-pribega-text transition-colors">
-                          Отмена
-                        </button>
-                      </div>
-                    </motion.div>
+                {uploading && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white p-8 rounded text-center">
+                      <div className="animate-spin w-8 h-8 border-4 border-pribega-accent border-t-transparent rounded-full mx-auto mb-4" />
+                      <p>Загрузка...</p>
+                    </div>
                   </div>
                 )}
-
-                <div className="bg-pribega-surface/50 border border-pribega-border p-4">
-                  <p className="font-body text-xs text-pribega-text-secondary">
-                    <strong>Как заменить фото:</strong><br/>
-                    1. Загрузите новое фото в этот чат<br/>
-                    2. Скопируйте имя файла (например: abc123_photo.jpg)<br/>
-                    3. Нажмите на фото которое хотите заменить<br/>
-                    4. Вставьте имя файла и нажмите "Сохранить"
-                  </p>
-                </div>
               </div>
             )}
 
-            {/* Services Tab */}
+            {/* SERVICES TAB */}
             {activeTab === 'services' && (
               <div className="space-y-6">
                 <div className="flex justify-end">
                   {editingServices ? (
                     <div className="flex gap-2">
-                      <button onClick={() => setEditingServices(false)} className="px-4 py-2 border border-pribega-border font-body text-xs uppercase tracking-wider text-pribega-text-secondary hover:border-pribega-text transition-colors">
+                      <button onClick={() => setEditingServices(false)} className="px-4 py-2 border border-pribega-border font-body text-xs uppercase">
                         <X size={14} className="inline mr-1" />Отмена
                       </button>
-                      <button onClick={saveServices} className="px-4 py-2 bg-pribega-accent text-white font-body text-xs uppercase tracking-wider hover:bg-pribega-text transition-colors">
+                      <button onClick={saveServices} className="px-4 py-2 bg-pribega-accent text-white font-body text-xs uppercase">
                         <Save size={14} className="inline mr-1" />Сохранить
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => setEditingServices(true)} className="px-4 py-2 border border-pribega-border font-body text-xs uppercase tracking-wider text-pribega-text-secondary hover:border-pribega-accent hover:text-pribega-accent transition-colors">
+                    <button onClick={() => setEditingServices(true)} className="px-4 py-2 border border-pribega-border font-body text-xs uppercase hover:border-pribega-accent">
                       <Edit3 size={14} className="inline mr-1" />Редактировать
                     </button>
                   )}
                 </div>
-
-                {services.map((category, catIndex) => (
-                  <div key={category.id} className="bg-pribega-surface border border-pribega-border p-6">
-                    <h3 className="font-heading text-lg font-light text-pribega-text mb-4">{category.title_ru}</h3>
+                {services.map((cat, ci) => (
+                  <div key={cat.id} className="bg-pribega-surface border border-pribega-border p-6">
+                    <h3 className="font-heading text-lg font-light text-pribega-text mb-4">{cat.title_ru}</h3>
                     <div className="space-y-3">
-                      {category.items.map((item, itemIndex) => (
-                        <div key={itemIndex} className="flex items-center gap-4 py-2 border-b border-pribega-border last:border-0">
+                      {cat.items.map((item, ii) => (
+                        <div key={ii} className="flex items-center gap-4 py-2 border-b border-pribega-border last:border-0">
                           {editingServices ? (
                             <>
-                              <input type="text" value={item.name} onChange={(e) => updateServiceItem(catIndex, itemIndex, 'name', e.target.value)}
-                                className="flex-1 bg-pribega-bg border border-pribega-border px-3 py-2 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none" />
-                              <input type="text" value={item.price} onChange={(e) => updateServiceItem(catIndex, itemIndex, 'price', e.target.value)}
-                                className="w-24 bg-pribega-bg border border-pribega-border px-3 py-2 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none text-right" />
+                              <input type="text" value={item.name} onChange={(e) => updateServiceItem(ci, ii, 'name', e.target.value)}
+                                className="flex-1 bg-pribega-bg border border-pribega-border px-3 py-2 font-body text-sm" />
+                              <input type="text" value={item.price} onChange={(e) => updateServiceItem(ci, ii, 'price', e.target.value)}
+                                className="w-24 bg-pribega-bg border border-pribega-border px-3 py-2 font-body text-sm text-right" />
                             </>
                           ) : (
                             <>
@@ -433,30 +378,23 @@ function Dashboard({ onLogout }) {
               </div>
             )}
 
-            {/* Settings Tab */}
+            {/* SETTINGS TAB */}
             {activeTab === 'settings' && (
               <div className="max-w-lg">
-                <div className="bg-pribega-surface border border-pribega-border p-6 space-y-6">
-                  <div>
-                    <h3 className="font-heading text-lg font-light text-pribega-text mb-4">Telegram уведомления</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">Chat ID канала/группы</label>
-                        <input type="text" value={settings.chat_id || ''} onChange={(e) => setSettings({ ...settings, chat_id: e.target.value })}
-                          placeholder="-1001234567890"
-                          className="w-full bg-pribega-bg border border-pribega-border px-4 py-3 font-body text-sm text-pribega-text focus:border-pribega-accent focus:outline-none" />
-                        <p className="font-body text-[10px] text-pribega-text-secondary mt-2">Добавьте бота в канал и получите Chat ID через @userinfobot</p>
-                      </div>
-                      <div className="flex gap-3">
-                        <button onClick={saveSettings}
-                          className="px-6 py-3 bg-pribega-text text-pribega-bg font-body text-[10px] uppercase tracking-[0.2em] hover:bg-pribega-accent transition-colors">
-                          Сохранить
-                        </button>
-                        <button onClick={testTelegram}
-                          className="px-6 py-3 border border-pribega-border font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary hover:border-pribega-accent hover:text-pribega-accent transition-colors">
-                          <Send size={12} className="inline mr-1" />Тест
-                        </button>
-                      </div>
+                <div className="bg-pribega-surface border border-pribega-border p-6">
+                  <h3 className="font-heading text-lg font-light text-pribega-text mb-4">Telegram уведомления</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="font-body text-[10px] uppercase tracking-[0.2em] text-pribega-text-secondary block mb-2">Chat ID</label>
+                      <input type="text" value={settings.chat_id || ''} onChange={(e) => setSettings({ ...settings, chat_id: e.target.value })}
+                        placeholder="-1001234567890"
+                        className="w-full bg-pribega-bg border border-pribega-border px-4 py-3 font-body text-sm" />
+                    </div>
+                    <div className="flex gap-3">
+                      <button onClick={saveSettings} className="px-6 py-3 bg-pribega-text text-pribega-bg font-body text-[10px] uppercase">Сохранить</button>
+                      <button onClick={testTelegram} className="px-6 py-3 border border-pribega-border font-body text-[10px] uppercase">
+                        <Send size={12} className="inline mr-1" />Тест
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -473,16 +411,9 @@ export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const auth = localStorage.getItem('adminAuth');
-    if (auth) setIsLoggedIn(true);
+    if (localStorage.getItem('adminAuth')) setIsLoggedIn(true);
   }, []);
 
-  const handleLogin = () => setIsLoggedIn(true);
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
-    setIsLoggedIn(false);
-  };
-
-  if (!isLoggedIn) return <LoginForm onLogin={handleLogin} />;
-  return <Dashboard onLogout={handleLogout} />;
+  if (!isLoggedIn) return <LoginForm onLogin={() => setIsLoggedIn(true)} />;
+  return <Dashboard onLogout={() => { localStorage.removeItem('adminAuth'); setIsLoggedIn(false); }} />;
 }
