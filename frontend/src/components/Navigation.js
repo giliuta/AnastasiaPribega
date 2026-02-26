@@ -72,15 +72,6 @@ export default function Navigation() {
                 {t.nav[link.key]}
               </Link>
             ))}
-            <Link
-              to="/quiz"
-              className={`font-body text-xs uppercase tracking-[0.2em] transition-all duration-300 hover:opacity-60 border-b pb-0.5 ${
-                isHome && !scrolled ? 'border-white/40' : 'border-pribega-accent'
-              } ${location.pathname === '/quiz' ? 'opacity-100' : 'opacity-70'}`}
-              data-testid="nav-link-quiz"
-            >
-              {t.nav.quiz}
-            </Link>
           </div>
 
           <div className="flex items-center gap-4 md:gap-6">

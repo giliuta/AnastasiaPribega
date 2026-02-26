@@ -480,7 +480,6 @@ export default function HomePage() {
       <HeroSection t={t} />
       <Marquee items={['PRECISION', 'BALANCE', 'ELEVATION', 'PRIBEGA', 'THE STANDARD OF BEAUTY']} speed={50} />
       <WhyStats lang={lang} />
-      <QuizButton lang={lang} />
       <FullServices t={t} />
       <PortfolioMarquee />
       <ReviewsSection lang={lang} />
